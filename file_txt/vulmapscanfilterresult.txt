@@ -1,0 +1,3 @@
+[*] http://210.44.53.226:81
+[*] https://clouddns.nwedu.chinaddic.com
+--> [名称:weblogic 未授权命令执行漏洞] [编号:CVE-2020-14882] [类型:命令执行漏洞] [rce] [url : https://clouddns.nwedu.chinaddic.com:443/console/css/%252e%252e%252fconsole.portal ]

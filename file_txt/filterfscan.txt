@@ -1,0 +1,4 @@
+failed
+start
+alive
+open

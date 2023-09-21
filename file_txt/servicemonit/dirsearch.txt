@@ -1,0 +1,1 @@
+root     21277  0.0  0.0  12892  1584 ?        S    13:16   0:00 bash /TIP/flask_cnvd/shellscript/directoryscan.sh dirsearchscan php,aspx,jsp,html,js 1 200 /TIP/flask_cnvd/dirsearch/db/Unauthorizedset.txt 5

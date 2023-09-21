@@ -1,0 +1,6 @@
+https://unpkg.zhimg.com/vue@2.5.2
+https://unpkg.zhimg.com/element-ui@2.15.1/lib/index.js
+https://g.alicdn.com/AWSC/AWSC/awsc.js
+https://getsimnum.caict.ac.cn/./static/js/manifest.65b5253a2b667751d11f.js
+https://getsimnum.caict.ac.cn/./static/js/vendor.e0db607852cb6cb23d83.js
+https://getsimnum.caict.ac.cn/./static/js/app.8772793ded8103232c75.js

@@ -1,0 +1,5 @@
+PING 36.110.116.43 (36.110.116.43) 56(84) bytes of data.
+
+--- 36.110.116.43 ping statistics ---
+5 packets transmitted, 0 received, 100% packet loss, time 4083ms
+

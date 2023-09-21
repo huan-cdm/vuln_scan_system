@@ -1,0 +1,18 @@
+
+Starting Nmap 7.60 ( https://nmap.org ) at 2022-11-08 18:48 CST
+Warning: 220.181.103.114 giving up on port because retransmission cap hit (6).
+Nmap scan report for 220.181.103.114
+Host is up (0.042s latency).
+Not shown: 36684 closed ports, 28843 filtered ports
+PORT      STATE SERVICE    VERSION
+4430/tcp  open  tcpwrapped
+10016/tcp open  tcpwrapped
+10020/tcp open  tcpwrapped
+10021/tcp open  tcpwrapped
+11110/tcp open  tcpwrapped
+11143/tcp open  tcpwrapped
+11223/tcp open  tcpwrapped
+11883/tcp open  tcpwrapped
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 409.55 seconds
