@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}IP基础信息{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>IP基础信息</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+
+  <script>
+    //ajax异步添加数据
+    function adddatabase() {
+    var ip = $('input[name="ip"]').val();
+    var port = $('input[name="port"]').val();
+    
+    var asn = $('input[name="asn"]').val();
+    var city = $('input[name="city"]').val();
+    var isp = $('input[name="isp"]').val();
+    var updatetime = $('input[name="updatetime"]').val();
+    var zhujiname = $('input[name="zhujiname"]').val();
+    $.ajax({
+        url: '/addbasicinformation/',
+        method: 'POST',
+        data: {
+            ip: ip,
+            port: port,
+            asn: asn,
+            city: city,
+            isp: isp,
+            updatetime: updatetime,
+            zhujiname: zhujiname
+        
+            },
+
+        success: function (res) { 
+          console.log(res)
+          console.log('添加数据成功')
+        },
+        error: function () {
+          alert('添加数据出错')
+        },
+        complete: function () {
+          alert('添加数据完成')
+        }
+      })
+    }
+    
+      </script>
+
+<script>
+	function deletefun(value) {
+		
+		$.ajax({
+                url: '/deleteshodandata/?id='+value,
+                method: 'GET',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('删除成功')
+                },
+                error: function () {
+                    alert('删除出错')
+                },
+                complete: function () {
+                    alert('删除完成')
+                }
+            })
+    }
+	</script>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+        <h1 style="text-align:left">
+          <a href="/portscan/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+          </a></h1>
+      <!--
+      <span><strong>最近缓存记录</strong></span><br>
+      {% for i in data1 %}
+      <span><input type="button" name="commit" value="删除" onclick="deletefun('{{ i[1] }}')">&nbsp;&nbsp;&nbsp;&nbsp;{{i[0]}}</span><br>
+      {% endfor %}
+      -->
+      <span>注:&nbsp;&nbsp;&nbsp;首先搜索缓存数据,缓存数据不存在搜索实时数据,点击存库可将实时数据转化为缓存数据,节省接口的使用次数。</span><br>
+      <form method="post" action="/portscanfunction/">
+        <p><input
+            type="text" name="ip" value="{{data2}}" required="required" placeholder="IP地址"> 
+            <select name="oper">
+              <option value="1">缓存数据</option>
+              <option value="2">实时数据</option>
+            </select>
+            <input type="submit" name="commit" value="查询"> 
+            <input type="button" name="commit" value="缓存" onclick="adddatabase()">
+          </p>
+
+      </form>
+      <table class="table table-bordered">
+        <tr>
+          <th>IP地址</th>
+          <th>端口</th>
+          <th>ASN编号</th>
+          <th>地理位置</th>
+          <th>ISP信息</th>
+          <th>最后更新时间</th>
+          <th>主机名</th>
+        </tr>
+        <tr>
+          <td>{{data3}} </td>
+          <input type="hidden" name="ip" value="{{data3}}"> 
+          <td>{{data}}</td>
+          <input type="hidden" name="port" value="{{data}}"> 
+          <td>{{data5}}</td>
+          <input type="hidden" name="asn" value="{{data5}}"> 
+          <td>{{data6}}</td>
+          <input type="hidden" name="city" value="{{data6}}"> 
+          <td>{{data7}}</td>
+          <input type="hidden" name="isp" value="{{data7}}"> 
+          <td>{{data8}}</td>
+          <input type="hidden" name="updatetime" value="{{data8}}"> 
+          <td>{{data4}}</td>
+          <input type="hidden" name="zhujiname" value="{{data4}}"> 
+        </tr>
+      </table>
+
+      <table class="table table-bordered">
+        
+        {% for i in data23 %}
+        <tr>
+         
+          <td>{{i[0]}}</td>
+          <td>{{i[1]}}</td>
+          <td>{{i[2]}}</td>
+          <td>{{i[3]}}</td>
+          <td>{{i[4]}}</td>
+          <td>{{i[5]}}</td>
+          <td>{{i[6]}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

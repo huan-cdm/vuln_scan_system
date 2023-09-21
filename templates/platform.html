@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}ARL资产探测{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ARL资产探测</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+  
+  <script>
+    //ajax异步启动ARL资产探测平台
+        function startarlplatformfunc() {
+          $.ajax({
+                url: '/startarlplatforminterface/',
+                method: 'GET',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('ARL服务正在启动中......')
+                },
+                error: function () {
+                    alert('ARL启动出错')
+                },
+                complete: function () {
+                    alert('ARL服务正在启动中......')
+                }
+            })
+          }
+        </script>
+
+
+<script>
+  //ajax异步启动github监控平台
+      function startgithubplatformfunc() {
+        $.ajax({
+              url: '/startgithubplatforminterface/',
+              method: 'GET',
+              success: function (res) { 
+                  console.log(res)
+                  console.log('github监控服务正在启动中......')
+              },
+              error: function () {
+                  alert('github监控服务启动出错')
+              },
+              complete: function () {
+                  alert('github监控服务正在启动中......')
+              }
+          })
+        }
+      </script>
+  
+  <script>
+    //ajax异步关闭ARL资产探测平台
+        function stoparlplatformfunc() {
+          $.ajax({
+                url: '/stoparlplatforminterface/',
+                method: 'GET',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('ARL服务正在关闭中......')
+                },
+                error: function () {
+                    alert('ARL服务关闭出错')
+                },
+                complete: function () {
+                    alert('ARL服务正在关闭中......')
+                }
+            })
+          }
+        </script>
+
+
+<script>
+  //ajax异步关闭github监控平台
+      function stopgithubplatformfunc() {
+        $.ajax({
+              url: '/stopgithubplatforminterface/',
+              method: 'GET',
+              success: function (res) { 
+                  console.log(res)
+                  console.log('github监控服务正在关闭中......')
+              },
+              error: function () {
+                  alert('github监控服务关闭出错')
+              },
+              complete: function () {
+                  alert('github监控服务正在关闭中......')
+              }
+          })
+        }
+      </script>
+
+
+<script>
+  //通过JS进行访问arl资产探测平台
+      function fangwenarlplatformfunc(value) {
+           window.open(""+value+"");
+        }
+</script>
+
+<script>
+  //通过JS进行访问github监控平台
+      function fangwengithubplatformfunc(value) {
+           window.open(""+value+"");
+        }
+</script>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+      <h1 style="text-align:left">
+        <a href="/platform/" style='text-decoration:none;'>
+        <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+        </a></h1>
+      <table class="table table-bordered">
+        <tr>
+          <th style=" text-align:center;">平台名称</th>
+          <th style=" text-align:center;">URL地址</th>
+          <th style=" text-align:center;">账号密码</th>
+          <th style=" text-align:center;">服务状态</th>
+          <th style=" text-align:center;">操作相关</th>
+        </tr>
+        <tr>
+          <td>
+            <p style="text-align:center;">arl资产探测平台</p>
+          </td>
+        <td>
+          <p style="text-align:center;">{{adata1}}</p>
+        </td>
+
+        <td>
+          <p style="text-align:center;">{{adata2}}</p>
+        </td>
+        <td>
+          <p style="text-align:center;">{{adata}}</p>
+        </td>
+        <td>
+          <p style="text-align:center;">
+          <a href="###" style='text-decoration:none;' onclick="startarlplatformfunc()">
+            <img src="{{ url_for('static', filename='ico/startgithub.ico') }}">
+          </a>
+          &nbsp;&nbsp;
+          <a href="###" style='text-decoration:none;' onclick="stoparlplatformfunc()">
+            <img src="{{ url_for('static', filename='ico/stopgithub.ico') }}">
+          </a>
+          &nbsp;&nbsp;
+          <a href="###" style='text-decoration:none;' onclick="fangwenarlplatformfunc('{{adata1}}')">
+            <img src="{{ url_for('static', filename='ico/fangwengithub.ico') }}">
+          </a>
+        </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p style="text-align:center;">github监控平台</p>
+        </td>
+        <td>
+          <p style="text-align:center;">{{gdata1}}</p>
+        </td>
+        <td>
+          <p style="text-align:center;">{{gdata2}}</p>
+        </td>
+        <td>
+          <p style="text-align:center;">{{gdata}}</p>
+        </td>
+        <td>
+          <p style="text-align:center;">
+          <a href="###" style='text-decoration:none;' onclick="startgithubplatformfunc()">
+            <img src="{{ url_for('static', filename='ico/startgithub.ico') }}">
+          </a>
+          &nbsp;&nbsp;
+          <a href="###" style='text-decoration:none;' onclick="stopgithubplatformfunc()">
+            <img src="{{ url_for('static', filename='ico/stopgithub.ico') }}">
+          </a>
+          &nbsp;&nbsp;
+          <a href="###" style='text-decoration:none;' onclick="fangwengithubplatformfunc('{{gdata1}}')">
+            <img src="{{ url_for('static', filename='ico/fangwengithub.ico') }}">
+          </a>
+        </p>
+        </td>
+      </tr>
+      </table>
+
+    </div>
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

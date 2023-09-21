@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}日志管理{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>日志管理</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+
+  <script>
+    $(function () {
+      goPage(1, 20);
+      var tempOption = "";
+      for (var i = 1; i <= totalPage; i++) {
+        tempOption += '<option value=' + i + '>' + i + '</option>'
+      }
+      $("#jumpWhere").html(tempOption);
+    })
+    var pageSize = 0;//每页显示行数
+    var currentPage_ = 1;//当前页全局变量，用于跳转时判断是否在相同页，在就不跳，否则跳转。
+    var totalPage;//总页数
+    function goPage(pno, psize) {
+      var itable = document.getElementById("adminTbody");
+      var num = itable.rows.length;//表格所有行数(所有记录数)
+
+      pageSize = psize;//每页显示行数
+      //总共分几页 
+      if (num / pageSize > parseInt(num / pageSize)) {
+        totalPage = parseInt(num / pageSize) + 1;
+      } else {
+        totalPage = parseInt(num / pageSize);
+      }
+      var currentPage = pno;//当前页数
+      currentPage_ = currentPage;
+      var startRow = (currentPage - 1) * pageSize + 1;
+      var endRow = currentPage * pageSize;
+      endRow = (endRow > num) ? num : endRow;
+      
+      $("#adminTbody tr").hide();
+      for (var i = startRow - 1; i < endRow; i++) {
+        $("#adminTbody tr").eq(i).show();
+      }
+      var tempStr = "共" + num + "条记录 分" + totalPage + "页 当前第" + currentPage + "页";
+      document.getElementById("barcon1").innerHTML = tempStr;
+
+      if (currentPage > 1) {
+        $("#firstPage").on("click", function () {
+          goPage(1, psize);
+        }).removeClass("ban");
+        $("#prePage").on("click", function () {
+          goPage(currentPage - 1, psize);
+        }).removeClass("ban");
+      } else {
+        $("#firstPage").off("click").addClass("ban");
+        $("#prePage").off("click").addClass("ban");
+      }
+
+      if (currentPage < totalPage) {
+        $("#nextPage").on("click", function () {
+          goPage(currentPage + 1, psize);
+        }).removeClass("ban")
+        $("#lastPage").on("click", function () {
+          goPage(totalPage, psize);
+        }).removeClass("ban")
+      } else {
+        $("#nextPage").off("click").addClass("ban");
+        $("#lastPage").off("click").addClass("ban");
+      }
+
+      $("#jumpWhere").val(currentPage);
+    }
+
+
+    function jumpPage() {
+      var num = parseInt($("#jumpWhere").val());
+      if (num != currentPage_) {
+        goPage(num, pageSize);
+      }
+    }
+
+  </script>
+
+<script>
+  //ajax异步清空MySQL日志
+function clearmysql() {
+  $.ajax({
+          url: '/clearmysqllog/',
+          method: 'POST',
+          
+          success: function (res) { 
+              console.log(res)
+              console.log('清空MySQL数据库日志成功')
+          },
+          error: function () {
+              alert('清空MySQL数据库日志出错')
+          },
+          complete: function () {
+              alert('清空MySQL数据库日志完成')
+          }
+      })
+}
+</script>
+
+<script>
+  //ajax异步清空Web日志
+function clearweb() {
+  $.ajax({
+          url: '/clearweblog/',
+          method: 'POST',
+          
+          success: function (res) { 
+              console.log(res)
+              console.log('清空Web日志成功')
+          },
+          error: function () {
+              alert('清空Web日志出错')
+          },
+          complete: function () {
+              alert('清空Web日志完成')
+          }
+      })
+}
+</script>
+
+<script>
+  //ajax异步清空系统日志
+function clearsystem() {
+  $.ajax({
+          url: '/clearsystemlog/',
+          method: 'POST',
+          
+          success: function (res) { 
+              console.log(res)
+              console.log('清空系统日志成功')
+          },
+          error: function () {
+              alert('系统正在重启,服务也会自动重启,大概需要1分钟左右。')
+          },
+          complete: function () {
+              alert('清空系统日志完成')
+          }
+      })
+}
+</script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+        <h1 style="text-align:left">
+          <span>页面刷新：</span>
+          <a href="/managelog/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+          </a><br>
+          <span>日志删除：</span>
+          <img src="{{ url_for('static', filename='ico/opersystemlog.ico') }}" onclick="clearsystem()">
+          <span>&nbsp;&nbsp;</span>{{data8}}<span>&nbsp;&nbsp;</span>
+          <img src="{{ url_for('static', filename='ico/weblog.ico') }}" onclick="clearweb()">
+          <span>&nbsp;&nbsp;</span>{{data6}}<span>&nbsp;&nbsp;</span>
+          <img src="{{ url_for('static', filename='ico/mysqllog.ico') }}" onclick="clearmysql()">
+          <span>&nbsp;&nbsp;</span> {{data7}}
+         
+        </h1>
+        <form method="post" action="/managelogfunc/">
+          <p>
+          
+            <input type="text" name="name" value="{{data789}}" placeholder="关键字">
+            <select name="oper">
+              <option value="1">web日志</option>
+              <option value="2">数据库日志</option>
+              <option value="3">系统日志</option>
+            </select>
+            <input type="submit" name="commit" value="查询">
+          </p>
+        </form>
+      <p>
+          
+
+      <table class="table table-bordered">
+        <tr>
+          <th>日志列表</th>
+        </tr>
+        <tbody id="adminTbody">
+        {% for i in data %}
+        <tr>
+          <td>{{i}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      </table>
+
+
+
+     
+
+
+
+
+    </div>
+
+    <div id="barcon" class="barcon">
+      <div id="barcon1" class="barcon1"></div>
+      <div id="barcon2" class="barcon2">
+        <ul>
+          <li><a href="###" id="firstPage">首页</a></li>
+          <li><a href="###" id="prePage">上一页</a></li>
+          <li><a href="###" id="nextPage">下一页</a></li>
+          <li><a href="###" id="lastPage">尾页</a></li>
+          <li><select id="jumpWhere">
+            </select></li>
+          <li><a href="###" id="jumpPage" οnclick="jumpPage()">跳转</a></li>
+        </ul>
+      </div>
+    </div>
+
+
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

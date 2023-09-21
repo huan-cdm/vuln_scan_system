@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}JS扫描{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>JS扫描</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+
+  <script>
+
+    $(function () {
+
+      goPage(1, 500);
+      var tempOption = "";
+      for (var i = 1; i <= totalPage; i++) {
+        tempOption += '<option value=' + i + '>' + i + '</option>'
+      }
+      $("#jumpWhere").html(tempOption);
+    })
+
+
+    var pageSize = 0;//每页显示行数
+    var currentPage_ = 1;//当前页全局变量，用于跳转时判断是否在相同页，在就不跳，否则跳转。
+    var totalPage;//总页数
+    function goPage(pno, psize) {
+      var itable = document.getElementById("adminTbody");
+      var num = itable.rows.length;//表格所有行数(所有记录数)
+
+      pageSize = psize;//每页显示行数
+      //总共分几页 
+      if (num / pageSize > parseInt(num / pageSize)) {
+        totalPage = parseInt(num / pageSize) + 1;
+      } else {
+        totalPage = parseInt(num / pageSize);
+      }
+      var currentPage = pno;//当前页数
+      currentPage_ = currentPage;
+      var startRow = (currentPage - 1) * pageSize + 1;
+      var endRow = currentPage * pageSize;
+      endRow = (endRow > num) ? num : endRow;
+      
+      $("#adminTbody tr").hide();
+      for (var i = startRow - 1; i < endRow; i++) {
+        $("#adminTbody tr").eq(i).show();
+      }
+      var tempStr = "共" + num + "条记录 分" + totalPage + "页 当前第" + currentPage + "页";
+      document.getElementById("barcon1").innerHTML = tempStr;
+
+      if (currentPage > 1) {
+        $("#firstPage").on("click", function () {
+          goPage(1, psize);
+        }).removeClass("ban");
+        $("#prePage").on("click", function () {
+          goPage(currentPage - 1, psize);
+        }).removeClass("ban");
+      } else {
+        $("#firstPage").off("click").addClass("ban");
+        $("#prePage").off("click").addClass("ban");
+      }
+
+      if (currentPage < totalPage) {
+        $("#nextPage").on("click", function () {
+          goPage(currentPage + 1, psize);
+        }).removeClass("ban")
+        $("#lastPage").on("click", function () {
+          goPage(totalPage, psize);
+        }).removeClass("ban")
+      } else {
+        $("#nextPage").off("click").addClass("ban");
+        $("#lastPage").off("click").addClass("ban");
+      }
+
+      $("#jumpWhere").val(currentPage);
+    }
+
+
+    function jumpPage() {
+      var num = parseInt($("#jumpWhere").val());
+      if (num != currentPage_) {
+        goPage(num, pageSize);
+      }
+    }
+
+  </script>
+
+  <script>
+    //ajax异步添加扫描任务提取js文件
+    function interfacefunc() {
+      var domain = $('input[name="domain"]').val();
+      $.ajax({
+                  url: '/pagelinkfun/',
+                  method: 'POST',
+                  data: {
+                    domain: domain
+			
+				          },
+                  success: function (res) { 
+                      console.log(res)
+                      console.log('JS链接提取成功')
+                  },
+                  error: function () {
+                      alert('JS链接提取出错')
+                  },
+                  complete: function () {
+                      alert('JS链接提取完成')
+                  }
+              })
+      }
+    </script>
+
+
+<script>
+  //ajax异步添加扫描任务提取提取js文件中的隐藏链接
+  function linkinterfacefunc() {
+    var jslinkdata = $('input[name="hiddendomain"]').val();
+    $.ajax({
+                url: '/hideenpagelinkfun/',
+                method: 'POST',
+                data: {
+                  jslinkdata: jslinkdata
+    
+                },
+                success: function (res) { 
+                    console.log(res)
+                    console.log('JS隐藏链接提取成功')
+                },
+                error: function () {
+                    alert('JS隐藏链接提取出错')
+                },
+                complete: function () {
+                    alert('JS隐藏链接提取完成')
+                }
+            })
+    }
+  </script>
+
+<script>
+  //ajax异步清空数据
+      function clearlinkinterfacefunc() {
+        $.ajax({
+              url: '/clearhideenpagelinkinterface/',
+              method: 'GET',
+              success: function (res) { 
+                  console.log(res)
+                  console.log('数据清空成功')
+              },
+              error: function () {
+                  alert('数据清空出错')
+              },
+              complete: function () {
+                  alert('数据清空完成')
+              }
+          })
+        }
+      </script>
+      
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+
+        <h1 style="text-align:left">
+          <a href="/pagelink/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+          </a></h1>
+
+      <form method="post">
+        <p><strong>提取JS文件</strong>&nbsp;&nbsp;&nbsp;
+          <input type="text" name="domain" value="" required="required"  placeholder="请输入网址,例如:https://www.baidu.com">
+          <input type="button" name="commit" value="查询" onclick="interfacefunc()">
+          <input type="button" name="commit" value="清空" onclick="clearlinkinterfacefunc()">
+          <br>
+          <strong>提取隐藏链接</strong>
+          <input type="text" name="hiddendomain" value="" required="required"  placeholder="请输入js文件链接">
+          <input type="button" name="commit" value="查询" onclick="linkinterfacefunc()"><br>
+          </p>
+
+      </form>
+
+      <table class="table table-bordered">
+         
+        
+         
+
+        
+        <tbody id="adminTbody">
+          <tr>
+            <th>JS隐藏链接</th>
+           </tr>
+          {% for ccc in data1 %}
+        
+          <tr>
+            <td>{{ccc}}</td>
+           
+          </tr>
+          {% endfor %}
+
+          <tr>
+            <th>JS链接列表</th>
+          </tr>
+
+        {% for bbb in data %}
+        
+        <tr>
+          <td>{{bbb}}</td>
+          
+        </tr>
+        {% endfor %}
+      </tbody>
+      </table>
+
+    </div>
+
+    <div id="barcon" class="barcon">
+      <div id="barcon1" class="barcon1"></div>
+      <div id="barcon2" class="barcon2">
+        <ul>
+          <li><a href="###" id="firstPage">首页</a></li>
+          <li><a href="###" id="prePage">上一页</a></li>
+          <li><a href="###" id="nextPage">下一页</a></li>
+          <li><a href="###" id="lastPage">尾页</a></li>
+          <li><select id="jumpWhere">
+            </select></li>
+          <li><a href="###" id="jumpPage" οnclick="jumpPage()">跳转</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

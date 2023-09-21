@@ -1,0 +1,427 @@
+{% extends "base.html" %}
+
+{% block title %}fscan端口扫描{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>fscan端口扫描</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link rel="ico" href="{{ url_for('static', filename='ico/e5.ico') }}" type="image/x-ico">
+  <link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+
+  <script>
+
+    $(function () {
+
+      goPage(1, 20);
+      var tempOption = "";
+      for (var i = 1; i <= totalPage; i++) {
+        tempOption += '<option value=' + i + '>' + i + '</option>'
+      }
+      $("#jumpWhere").html(tempOption);
+    })
+
+
+    var pageSize = 0;//每页显示行数
+    var currentPage_ = 1;//当前页全局变量，用于跳转时判断是否在相同页，在就不跳，否则跳转。
+    var totalPage;//总页数
+    function goPage(pno, psize) {
+      var itable = document.getElementById("adminTbody");
+      var num = itable.rows.length;//表格所有行数(所有记录数)
+
+      pageSize = psize;//每页显示行数
+      //总共分几页 
+      if (num / pageSize > parseInt(num / pageSize)) {
+        totalPage = parseInt(num / pageSize) + 1;
+      } else {
+        totalPage = parseInt(num / pageSize);
+      }
+      var currentPage = pno;//当前页数
+      currentPage_ = currentPage;
+      var startRow = (currentPage - 1) * pageSize + 1;
+      var endRow = currentPage * pageSize;
+      endRow = (endRow > num) ? num : endRow;
+      
+      $("#adminTbody tr").hide();
+      for (var i = startRow - 1; i < endRow; i++) {
+        $("#adminTbody tr").eq(i).show();
+      }
+      var tempStr = "共" + num + "条记录 分" + totalPage + "页 当前第" + currentPage + "页";
+      document.getElementById("barcon1").innerHTML = tempStr;
+
+      if (currentPage > 1) {
+        $("#firstPage").on("click", function () {
+          goPage(1, psize);
+        }).removeClass("ban");
+        $("#prePage").on("click", function () {
+          goPage(currentPage - 1, psize);
+        }).removeClass("ban");
+      } else {
+        $("#firstPage").off("click").addClass("ban");
+        $("#prePage").off("click").addClass("ban");
+      }
+
+      if (currentPage < totalPage) {
+        $("#nextPage").on("click", function () {
+          goPage(currentPage + 1, psize);
+        }).removeClass("ban")
+        $("#lastPage").on("click", function () {
+          goPage(totalPage, psize);
+        }).removeClass("ban")
+      } else {
+        $("#nextPage").off("click").addClass("ban");
+        $("#lastPage").off("click").addClass("ban");
+      }
+
+      $("#jumpWhere").val(currentPage);
+    }
+
+
+    function jumpPage() {
+      var num = parseInt($("#jumpWhere").val());
+      if (num != currentPage_) {
+        goPage(num, pageSize);
+      }
+    }
+
+  </script>
+
+  <script>
+    //ajax异步添加fscan扫描任务,批量扫描
+  function batchscantaskfunc() {
+    var operport = $('select[name="operport"]').val();
+    $.ajax({
+            url: '/fscan/',
+            method: 'POST',
+            data: {
+                operport: operport
+                  },
+            success: function (res) { 
+                console.log(res)
+                console.log('fscan扫描任务处理成功')
+            },
+            error: function () {
+                alert('fscan扫描任务处理出错')
+            },
+            complete: function () {
+                alert('fscan扫描任务处理完成')
+            }
+        })
+  }
+  </script>
+
+
+<script>
+  //ajax异步结束fscan后台进程
+function killtaskfunc() {
+  
+  $.ajax({
+          url: '/killfscan/',
+          method: 'POST',
+          
+          success: function (res) { 
+              console.log(res)
+              console.log('结束fscan后台进程成功')
+          },
+          error: function () {
+              alert('结束fscan后台进程出错')
+          },
+          complete: function () {
+              alert('结束fscan后台进程完成')
+          }
+      })
+}
+
+    </script>
+
+<script>
+  //ajax异步清空扫描结果
+function emptyfscanresultfunc() {
+  
+  $.ajax({
+          url: '/clearfscanresult/',
+          method: 'POST',
+          success: function (res) { 
+              console.log(res)
+              console.log('清空fscan扫描结果成功')
+          },
+          error: function () {
+              alert('清空fscan扫描结果出错')
+          },
+          complete: function () {
+              alert('清空fscan扫描结果完成')
+          }
+      })
+}
+    </script>
+
+
+<script>
+  //ajax异步操作黑名单
+function showblackfunc() {
+  document.getElementById('blacklistshowid').style.display="block";
+
+  $.ajax({
+          url: '/Queryingfscanblacklist/',
+          method: 'GET',
+          success: function (res) { 
+              console.log(res)
+          },
+          error: function () {
+              
+          },
+          complete: function () {
+              
+          }
+        })
+
+        $.getJSON("/QueryingBlackfscanlistbyajax/",
+		    function(info){
+			  $('#opbyid3').empty();
+			    for (var i = 0; i < info.query_black_fscan_list.length; i++) {
+				    $('#opbyid3').append('<option>' + info.query_black_fscan_list[i] + '</option><br>');
+   			}
+		}) 
+
+  }
+</script>
+
+<script>
+  //收起黑名单显示
+function returnfscanblackfunc() {
+  document.getElementById('blacklistshowid').style.display="none";
+  }
+</script>
+
+
+<script>
+  //ajax异步添加扫描目标
+function fscantaretaddfunc() {
+  
+  $.ajax({
+          url: '/addfscantargettxt/',
+          method: 'POST',
+          success: function (res) { 
+              console.log(res)
+              console.log('fscan扫描目标添加成功')
+          },
+          error: function () {
+              alert('fscan扫描目标添加出错')
+          },
+          complete: function () {
+              alert('fscan扫描目标添加完成')
+          }
+      })
+}
+    </script>
+
+<script>
+  //ajax异步添加黑名单fscan
+function addfscanblackfunc() {
+  var keyvalue = $('input[name="keyvalue"]').val();
+  $.ajax({
+          url: '/filterfscan/',
+          method: 'POST',
+          data: {
+                keyvalue: keyvalue
+              },
+          success: function (res) { 
+              console.log(res)
+              console.log(keyvalue+'添加到黑名单库成功')
+          },
+          error: function () {
+              alert(keyvalue+'添加到黑名单库出错')
+          },
+          complete: function () {
+              alert(keyvalue+'添加到黑名单库完成')
+          }
+      })
+}
+</script>
+
+<script>
+  //ajax异步同步黑名单
+function syncblackfunc() {
+  
+  $.ajax({
+          url: '/flushfilterfscan/',
+          method: 'GET',
+         
+          success: function (res) { 
+              console.log(res)
+              console.log('黑名单同步成功')
+          },
+          error: function () {
+              alert('黑名单同步出错')
+          },
+          complete: function () {
+              alert('黑名单同步完成')
+          }
+      })
+}
+</script>
+
+
+<script>
+  //ajax扫描结果复制
+function copyblackfunc() {
+  
+  $.ajax({
+          url: '/copyfscanresult/',
+          method: 'GET',
+         
+          success: function (res) { 
+              console.log(res)
+              console.log('扫描结果同步成功')
+          },
+          error: function () {
+              alert('扫描结果同步出错')
+          },
+          complete: function () {
+              alert('扫描结果同步完成')
+          }
+      })
+}
+</script>
+
+
+<script>
+  //ajax异步删除fscan黑名单
+      function deletefscanblackbynamefunc() {
+        var blackname = $('input[name="blackname"]').val();
+        $.ajax({
+                url: '/deletefscanblackbyname?name='+blackname,
+                method: 'GET',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('黑名单'+blackname+'删除成功')
+                },
+                error: function () {
+                    alert('删除错误')
+                },
+                complete: function () {
+                    alert('黑名单'+blackname+'删除完成')
+                }
+            })
+        }
+</script>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+      <!--
+        <p><strong>IP&nbsp;</strong>
+          <input type="text" name="ip" value="{{data1}}" required="required" placeholder="支持单个IP,C段和B段">
+          &nbsp;&nbsp;&nbsp;
+          <br>-->
+          <h1 style="text-align:left">
+            <strong>操作按钮&nbsp;&nbsp;</strong>
+            <a href="/fscanner/" style='text-decoration:none;'>
+            <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+            </a>
+            <a href="/fscanfiledownload/" style='text-decoration:none;'>
+              <img src="{{ url_for('static', filename='ico/download2.ico') }}">
+            </a>
+          </h1>
+          <form method="post" action="/fscanfileupload/" enctype="multipart/form-data">
+            <input type="file" name="file"  required="required" placeholder="文件上传"  accept=".txt" onchange="upFile(event)">
+            <input type="submit" name="commit" value="上传" onclick="startvulnfunc()">{{datainfo}}
+          </form>
+          <strong>指定端口&nbsp;&nbsp;</strong><select name="operport">
+            <option value="1-65535">全端口</option>
+            <option value="1-1000">常见端口</option>
+            <option value="80,443,8080,8081,8888,81,5008,7001,9001">网站常用端口</option>
+            <option value="50050">Backdoor_check</option>
+            <option value="3306,1433,1521,27017,6379">数据库常用端口</option>
+            <option
+              value="80,81,443,7001,8080,8081,3306,22,23,21,3389,6379,9200,27017,8888,8009,11211,5900,5901,2181,837,873,389,1090,1099,445,5632,8000,8161,9043,50070,1433,1521,5432,5984">
+              SRC常用端口</option>
+          </select>
+
+        
+        </p>
+
+      <table class="table table-bordered">
+        <tr>
+          <th>fscan端口扫描进程&nbsp;&nbsp;{{data4}}</th>
+        </tr>
+
+        {% for aa in data3 %}
+        <tr>
+          <td>{{aa}}</td>
+
+        </tr>
+        {% endfor %}
+        <span style="display:none;" id="blacklistshowid">
+          <strong>黑名单操作</strong>
+          <input type="text" name="keyvalue" value="" required="required" placeholder="添加黑名单">
+          <select id="opbyid3">
+            <option>黑名单列表</options>
+          </select>
+          <input type="button" name="commit" value="提交" onclick="addfscanblackfunc()">
+          <input type="text" name="blackname" required="required" value="" placeholder="删除黑名单">
+          <input type="button" name="commit" value="删除" onclick="deletefscanblackbynamefunc()">
+          <input type="button" name="commit" value="返回" onclick="returnfscanblackfunc()">
+        </span>
+
+          <p>
+            <strong>操作按钮</strong>&nbsp;
+            <!--<input type="button" name="commit" value="单个扫描" onclick="scantaskfunc()">-->
+            <input type="button" name="commit" value="目标添加" onclick="fscantaretaddfunc()">
+            <input type="button" name="commit" value="批量扫描" onclick="batchscantaskfunc()">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" name="commit" value="扫描结果复制" onclick="copyblackfunc()">
+            <input type="button" name="commit" value="黑名单操作" onclick="showblackfunc()">
+            <input type="button" name="commit" value="黑名单同步" onclick="syncblackfunc()">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" name="commit" value="结束进程" onclick="killtaskfunc()">
+            <input type="button" name="commit" value="清空扫描结果和目标" onclick="emptyfscanresultfunc()">
+          </p>
+      
+
+        <tr>
+          <th>fscan扫描结果</th>
+        </tr>
+        <tbody id="adminTbody">
+        {% for bbb in data %}
+        <tr>
+          <td>{{bbb}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      </table>
+    </div>
+
+    <div id="barcon" class="barcon">
+      <div id="barcon1" class="barcon1"></div>
+      <div id="barcon2" class="barcon2">
+        <ul>
+          <li><a href="###" id="firstPage">首页</a></li>
+          <li><a href="###" id="prePage">上一页</a></li>
+          <li><a href="###" id="nextPage">下一页</a></li>
+          <li><a href="###" id="lastPage">尾页</a></li>
+          <li><select id="jumpWhere">
+            </select></li>
+          <li><a href="###" id="jumpPage" οnclick="jumpPage()">跳转</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}DNS解析记录{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>DNS解析记录</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <meta name="robots" content="noindex,follow" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+     
+        <h1 style="text-align:left">
+          <a href="/icppage/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+          </a></h1>
+      <form method="post" action="/dnsrelas/">
+        <p><strong>域名:</strong><input type="text" name="domain" value="{{data2}}"
+            required="required" placeholder="请输入网址,例如:baidu.com">
+          &nbsp;&nbsp;&nbsp;
+          <strong>操作选项:</strong><select name="oper">
+            <option value="1">A记录</option>
+            <option value="2">CAA记录</option>
+            <option value="3">NS记录</option>
+            <option value="4">CNAME记录</option>
+            <option value="5">TXT记录</option>
+            <option value="6">MX记录</option>
+            <option value="7">AAAA记录</option>
+          </select>
+          &nbsp;&nbsp;&nbsp;
+          <input type="submit" name="commit" value="提交">
+        </p>
+
+      </form>
+
+      <table class="table table-bordered">
+        <!--
+        <tr>
+            <th style=" text-align:center;">DNS解析记录详情</th>
+        </tr>
+            -->
+        <td>
+          <p>{{data}}</p>
+        </td>
+
+      </table>
+
+    </div>
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

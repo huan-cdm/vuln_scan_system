@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}子域名扫描{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>子域名扫描</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+
+  <script>
+
+    $(function () {
+
+      goPage(1, 20);
+      var tempOption = "";
+      for (var i = 1; i <= totalPage; i++) {
+        tempOption += '<option value=' + i + '>' + i + '</option>'
+      }
+      $("#jumpWhere").html(tempOption);
+    })
+
+
+    var pageSize = 0;//每页显示行数
+    var currentPage_ = 1;//当前页全局变量，用于跳转时判断是否在相同页，在就不跳，否则跳转。
+    var totalPage;//总页数
+    function goPage(pno, psize) {
+      var itable = document.getElementById("adminTbody");
+      var num = itable.rows.length;//表格所有行数(所有记录数)
+
+      pageSize = psize;//每页显示行数
+      //总共分几页 
+      if (num / pageSize > parseInt(num / pageSize)) {
+        totalPage = parseInt(num / pageSize) + 1;
+      } else {
+        totalPage = parseInt(num / pageSize);
+      }
+      var currentPage = pno;//当前页数
+      currentPage_ = currentPage;
+      var startRow = (currentPage - 1) * pageSize + 1;
+      var endRow = currentPage * pageSize;
+      endRow = (endRow > num) ? num : endRow;
+      
+      $("#adminTbody tr").hide();
+      for (var i = startRow - 1; i < endRow; i++) {
+        $("#adminTbody tr").eq(i).show();
+      }
+      var tempStr = "共" + num + "条记录 分" + totalPage + "页 当前第" + currentPage + "页";
+      document.getElementById("barcon1").innerHTML = tempStr;
+
+      if (currentPage > 1) {
+        $("#firstPage").on("click", function () {
+          goPage(1, psize);
+        }).removeClass("ban");
+        $("#prePage").on("click", function () {
+          goPage(currentPage - 1, psize);
+        }).removeClass("ban");
+      } else {
+        $("#firstPage").off("click").addClass("ban");
+        $("#prePage").off("click").addClass("ban");
+      }
+
+      if (currentPage < totalPage) {
+        $("#nextPage").on("click", function () {
+          goPage(currentPage + 1, psize);
+        }).removeClass("ban")
+        $("#lastPage").on("click", function () {
+          goPage(totalPage, psize);
+        }).removeClass("ban")
+      } else {
+        $("#nextPage").off("click").addClass("ban");
+        $("#lastPage").off("click").addClass("ban");
+      }
+
+      $("#jumpWhere").val(currentPage);
+    }
+
+
+    function jumpPage() {
+      var num = parseInt($("#jumpWhere").val());
+      if (num != currentPage_) {
+        goPage(num, pageSize);
+      }
+    }
+
+  </script>
+
+
+  <script>
+    //ajax异步添加subDomainsBrute扫描任务
+  function subDomainsBrutescanfunc() {
+    var domain = $('input[name="domain"]').val();
+    var dict = $('select[name="dict"]').val();
+    $.ajax({
+            url: '/subDomainsBrutefunc/',
+            method: 'POST',
+            data: {
+                domain: domain,
+                dict: dict
+               
+                  
+                  },
+            success: function (res) { 
+                console.log(res)
+                console.log('扫描任务请求成功')
+            },
+            error: function () {
+                alert('扫描任务请求出错')
+            },
+            complete: function () {
+                alert('扫描任务请求完成')
+            }
+        })
+  }
+  </script>
+
+<script>
+//ajax异步结束subDomainsBrute后台进程
+function subdomainkillfunc() {
+  
+  $.ajax({
+          url: '/killsubdomainsbrutescan/',
+          method: 'POST',
+          
+          success: function (res) { 
+              console.log(res)
+              console.log('结束后台进程成功')
+          },
+          error: function () {
+              alert('结束后台进程出错')
+          },
+          complete: function () {
+              alert('结束后台进程完成')
+          }
+      })
+}
+
+    </script>
+
+<script>
+//ajax异步扫描前初始化
+function subscanInitialize() {
+  
+  $.ajax({
+          url: '/subdomainsbrutescanInitialize/',
+          method: 'POST',
+          
+          success: function (res) { 
+              console.log(res)
+              console.log('清空扫描结果成功')
+          },
+          error: function () {
+              alert('清空扫描结果出错')
+          },
+          complete: function () {
+              alert('清空扫描结果完成')
+          }
+      })
+}
+
+</script>
+
+<script>
+//js文本复制
+  function copy1(value) {
+    alert(value);
+  }
+</script>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+     
+        <h1 style="text-align:left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <strong>操作按钮</strong>
+          <a href="/subdomainsbrutescan/" style='text-decoration:none;'>
+            <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+          </a>
+          <a href="/subdomainlistfiledown/" style='text-decoration:none;'>
+            <img src="{{ url_for('static', filename='ico/download2.ico') }}">
+          </a>
+          <a href="/subdomainiplistfiledown/" style='text-decoration:none;'>
+            <img src="{{ url_for('static', filename='ico/ipdownload.ico') }}">
+          </a>
+        </h1>
+
+      <table class="table table-bordered">
+
+        <tr>
+          <td>
+            <input type="text" name="domain" value="" required="required" placeholder="example.com">
+            <select name="dict">
+              <option value="1">1.5w字典</option>
+              <option value="2">7.0w字典</option>
+            </select>
+            <input type="button" name="commit" value="扫描" onclick="subDomainsBrutescanfunc()">
+          </td>
+          <td>
+            <span>子域名扫描服务运行状态:</span>&nbsp;&nbsp;
+            <font color="red">{{data1}}</font>
+          </td>
+          <td>
+            <input type="button" name="commit" value="结束进程" onclick="subdomainkillfunc()">&nbsp;&nbsp;
+            <input type="button" name="commit" value="清空结果" onclick="subscanInitialize()">
+          </td>
+      </tr>
+     
+       <tr>
+        <th>子域名</th>
+        <th>IP地址</th>
+       </tr>
+        <tbody id="adminTbody">
+                 
+        {% for i in data2 %}
+        <tr>
+          <td>{{i[0]}}</td>
+          <td>{{i[1]}}</td>
+        </tr>
+        {% endfor %}
+     
+     
+      </tbody>
+      </table>
+    </div>
+
+
+    <div id="barcon" class="barcon">
+      <div id="barcon1" class="barcon1"></div>
+      <div id="barcon2" class="barcon2">
+        <ul>
+          <li><a href="###" id="firstPage">首页</a></li>
+          <li><a href="###" id="prePage">上一页</a></li>
+          <li><a href="###" id="nextPage">下一页</a></li>
+          <li><a href="###" id="lastPage">尾页</a></li>
+          <li><select id="jumpWhere">
+            </select></li>
+          <li><a href="###" id="jumpPage" οnclick="jumpPage()">跳转</a></li>
+        </ul>
+      </div>
+    </div>
+
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

@@ -1,0 +1,28 @@
+#menu,#menu ul {
+	text-align: left;
+	list-style-type: none;
+}
+#menu>li {
+	position: relative;
+	width: 100px;
+	height: 20px;
+	float: left;
+	transition: background-color 300ms;
+}
+
+
+#menu>li>ul {
+	position: absolute;
+	min-width: 200%;
+	top: 200%;
+	
+	
+	max-height: 100px;
+	overflow: hidden;
+	opacity: 0;
+	transition: all 600ms;
+}
+#menu>li:hover>ul {
+	max-height: 300px;
+	opacity: 1;
+}

@@ -1,0 +1,12 @@
+.idea/
+__pycache__/
+*.py[cod]
+venv/
+.DS_Store
+celerybeat-schedule
+dump.rdb
+config.ini
+data/
+db.sqlite3
+github.db
+.env

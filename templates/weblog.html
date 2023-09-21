@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Web操作日志{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Web操作日志</title>
+<link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+<link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+<meta name="robots" content="noindex,follow" />
+</head>
+<body>
+  <div class="container">
+    <div class="login">
+     
+      <h1>Web操作日志</h1>
+      
+      <a href="/clearweblog/" style='text-decoration:none;'>清空日志</a>
+      
+      <br>
+      日志大小:{{data1}}
+      <br>
+      <span>谨慎清理日志,需要重启服务才能开启日志记录功能。</span><br>
+      <span>日志解释:&nbsp;&nbsp;日志记录时间-日志级别-触发日志记录的python文件名-触发日志记录的函数名-触发日志记录的代码行数-路由的详细描述</span>
+      <table class="table table-bordered">
+        <tr>
+          <th style=" text-align:center;">Web操作日志</th>
+          
+          
+        </tr>
+        {% for i in data %}
+        <tr>
+         
+            <td>{{i}}</td>
+            
+           
+          </tr>
+          {% endfor %}
+        </table>
+
+    </div>
+
+    <div class="login-help">
+    </div>
+  </div>
+<div style="text-align:center;clear:both">
+</div>
+</body>
+</html>
+{% endblock %}

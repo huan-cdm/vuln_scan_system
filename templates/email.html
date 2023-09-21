@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}域名邮箱速查{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>域名邮箱速查</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <meta name="robots" content="noindex,follow" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+      <form method="post" action="/domainbyemail/">
+        <p><strong>域名:</strong><input type="text" name="domain" value="{{data1}}" required="required"
+            placeholder="请输入网址,例如:baidu.com"><input type="submit" name="commit" value="查询"></p>
+
+      </form>
+
+      <table class="table table-bordered">
+        <!--
+        <tr>
+            <th style=" text-align:center;">域名邮箱速查界面</th>
+        </tr>
+        <td><p>{{data}}</p></td>
+
+            -->
+
+
+        {% for bbb in data %}
+        <tr>
+          <td>{{bbb}}</td>
+
+        </tr>
+        {% endfor %}
+
+      </table>
+
+    </div>
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

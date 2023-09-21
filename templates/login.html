@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html lang="zxx">
+
+<head>
+	<title>信息收集平台</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8" />
+	<meta name="keywords" content="" />
+	<script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	
+	<script>
+		function myFunction1(){
+			alert("请联系管理员!")
+		}
+	</script>
+	<link type="text/css" href="{{ url_for('static', filename='css/style11.css') }}" rel="stylesheet">
+	<link type="text/css" href="{{ url_for('static', filename='css/fontawesome-all.css') }}" rel="stylesheet">
+	<link href="http://maxcdn.bootstrapcdn.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i"
+		rel="stylesheet">
+	<link href="http://maxcdn.bootstrapcdn.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i"
+		rel="stylesheet">
+
+
+<script>
+//ajax异步查询系统中的用户
+  function finduserfunc() {
+	var username = $('input[name="username"]').val();
+	$.ajax({
+			url: '/judgeisuser/',
+			method: 'POST',
+			data:{
+				username:username
+				},
+			success:function (data) { 
+				console.log(data)
+			},
+			error:function () {
+				
+			},
+			complete: function () {
+			}
+		})
+		$.getJSON("/judgeuserinist/",
+		function(info){
+			document.getElementById("demo").innerHTML = info.message;
+		})           
+		
+	}
+	
+</script>
+
+<script>
+	window.onload=function(){
+	
+	//定时器每秒调用一次fnDate()
+	setInterval(function(){
+	fnDate();
+	},1000);
+	}
+	
+	//js 获取当前时间
+	function fnDate(){
+	var oDiv=document.getElementById("logintime");
+	var date=new Date();
+	var year=date.getFullYear();//当前年份
+	var month=date.getMonth();//当前月份
+	var data=date.getDate();//天
+	var hours=date.getHours();//小时
+	var minute=date.getMinutes();//分
+	var second=date.getSeconds();//秒
+	var time=year+"-"+fnW((month+1))+"-"+fnW(data)+" "+fnW(hours)+":"+fnW(minute)+":"+fnW(second);
+	oDiv.innerHTML=time;
+	}
+	//补位 当某个字段不是两位数时补0
+	function fnW(str){
+	var num;
+	str>10?num=str:num="0"+str;
+	return num;
+	} 
+	</script>
+
+<script>
+	//ajax异步查询系统更新内容
+	  function systemupdatefunc() {
+		document.getElementById('div1').style.display="block";
+		$.getJSON("/showsystemupdate/",
+		function(info){
+			document.getElementById("dk2").innerHTML = info.version;
+			document.getElementById("dk3").innerHTML = info.time;
+			document.getElementById("dk4").innerHTML = info.language;
+			document.getElementById("dk5").innerHTML = info.database;
+			document.getElementById("dk6").innerHTML = info.language1;
+			document.getElementById("dk1").innerHTML = info.event;
+			document.getElementById("dk7").innerHTML = info.packup;
+			$('#dk').empty();
+			for (var i = 0; i < info.eventName.length; i++) {
+				$('#dk').append('<span>' + info.eventName[i] + '</span><br>');
+   			}
+		})           
+		}
+
+</script>
+
+<script type="text/javascript">
+	function packupfunc(){
+		document.getElementById('div1').style.display="none";
+	}
+</script>
+
+
+
+</head>
+<body>
+	<div id="bg">
+		<canvas></canvas>
+		<canvas></canvas>
+		<canvas></canvas>
+	</div>
+	<div class="sub-main-w3">
+		<form action="/login/" method="post">
+			<div class="form-style-agile">
+				<div id="div1">
+				<span id="dk2"></span><br>
+				<span id="dk3"></span><br>
+				<span id="dk4"></span><br>
+				<span id="dk5"></span><br>
+				<span id="dk6"></span><br>
+				<span id="dk1"></span><br>
+				<span id="dk"></span><br>
+				<span id="dk7" onclick="packupfunc()"></span><br>
+			</div>
+			<h2>
+				<span>信息收集平台</span>
+				
+			</h2>
+			<h5 id="logintime">
+				
+			</h5>
+				<label>
+					账号
+				</label>
+				
+				<input placeholder="账号" name="username" type="text" required="required" ,value="{{data2}}" onmouseout="finduserfunc()">
+				<span id="demo"></span>
+			</div>
+			<div class="form-style-agile">
+				<label>
+
+					密码
+				</label>
+				<input placeholder="密码" name="password" type="password" required="required" ,value="{{data3}}">
+				{{data1}}
+			</div>
+			
+			
+			<input type="submit" value="登录">
+			<br>
+			<p style="text-align:left">
+				<a href="#" onclick="myFunction1()">忘记密码</a>
+				<a href="#" onclick="systemupdatefunc()">更新说明</a>
+			</p>
+		</form>
+	
+	</div>
+
+	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/canva_moving_effect.js') }}"></script>
+</body>
+</html>

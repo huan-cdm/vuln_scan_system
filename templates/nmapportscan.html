@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}nmap端口扫描{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>nmap端口扫描</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+  <script>
+  //ajax异步添加nmap扫描任务
+  function nmapscantaskfunc() {
+    var ip = $('input[name="ip"]').val();
+    var operrate = $('select[name="operrate"]').val();
+    var operport = $('select[name="operport"]').val();
+    $.ajax({
+            url: '/nmapportscanfun/',
+            method: 'POST',
+            data: {
+                ip: ip,
+                operrate: operrate,
+                operport: operport
+                  },
+            success: function (res) { 
+                console.log(res)
+                console.log('nmap扫描任务请求成功')
+            },
+            error: function () {
+                alert('nmap扫描任务请求出错')
+            },
+            complete: function () {
+                alert('nmap扫描任务请求完成')
+            }
+        })
+  }
+  </script>
+
+
+<script>
+  //ajax异步结束nmap后台进程
+function killnmapscantaskfunc() {
+  $.ajax({
+          url: '/killnmap/',
+          method: 'POST',
+          success: function (res) { 
+              console.log(res)
+              console.log('结束nmap后台进程请求成功')
+          },
+          error: function () {
+              alert('结束nmap后台进程请求出错')
+          },
+          complete: function () {
+              alert('结束nmap后台进程请求完成')
+          }
+      })
+}
+</script>
+
+<script>
+//ajax异步删除nmap扫描数据
+function clearnmapscantaskfunc() {
+  $.ajax({
+          url: '/clearnmapdata/',
+          method: 'POST',
+          success: function (res) { 
+              console.log(res)
+              console.log('nmap扫描数据删除成功')
+          },
+          error: function () {
+              alert('nmap扫描数据删除出错')
+          },
+          complete: function () {
+              alert('nmap扫描数据删除完成')
+          }
+      })
+}
+</script>
+
+
+<script>
+  //ajax异步同步扫描数据
+  function copynmapscandatafunc() {
+    $.ajax({
+            url: '/copynmapdata/',
+            method: 'POST',
+            success: function (res) { 
+                console.log(res)
+                console.log('nmap扫描数据同步成功')
+            },
+            error: function () {
+                alert('nmap扫描数据同步出错')
+            },
+            complete: function () {
+                alert('nmap扫描数据同步完成')
+            }
+        })
+  }
+  </script>
+
+<script>
+  //ajax异步过滤nmap扫描数据
+      function filternmapdatafunc() {
+        var opername = $('select[name="opername"]').val();
+        $.ajax({
+              url: '/filternmapresult/?opername='+opername,
+              method: 'GET',
+              success: function (res) { 
+                  console.log(res)
+                  console.log('已检索关键词'+opername+'的数据')
+              },
+              error: function () {
+                  alert('检索失败')
+              },
+              complete: function () {
+                  alert('已检索关键词'+opername+'的数据')
+              }
+          })
+        }
+      </script>
+
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+      <h1 style="text-align:left">
+        <strong>刷新页面&nbsp;&nbsp;</strong>
+        <a href="/nmapportscan/" style='text-decoration:none;'>
+        <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+        </a>
+      </h1>
+        <p><strong>IP地址</strong>
+          <input type="text" name="ip" value="{{data1}}" required="required" placeholder="IP地址">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <strong>扫描速率</strong><select name="operrate">
+            <option value="100">rate_100</option>
+            <option value="1000">rate_1000</option>
+            <option value="10000">rate_10000</option>
+          </select>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+        <strong>端口</strong><select name="operport">
+            <option value="1-65535">全端口</option>
+            <option value="1-1000">常见端口</option>
+            <option value="80,443,8080,8081,8888,81,5008,7001,9001">网站常用端口</option>
+            <option value="50050">Backdoor_check</option>
+            <option value="3306,1433,1521,27017">数据库常用端口</option>
+            <option
+              value="80,81,443,7001,8080,8081,3306,22,23,21,3389,6379,9200,27017,8888,8009,11211,5900,5901,2181,837,873,389,1090,1099,445,5632,8000,8161,9043,50070,1433,1521,5432,5984">
+              src常用端口</option>
+          </select>
+         &nbsp;&nbsp;&nbsp;&nbsp;
+          <input type="button" name="commit" value="扫描" onclick="nmapscantaskfunc()">
+          <br><br>
+          <strong>选项</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+          <input type="button" name="commit" value="扫描结果同步" onclick="copynmapscandatafunc()">
+          &nbsp;
+          <input type="button" name="commit" value="结束扫描进程" onclick="killnmapscantaskfunc()">
+          &nbsp;
+          <input type="button" name="commit" value="删除扫描数据" onclick="clearnmapscantaskfunc()">
+          <br><br>
+          <strong>过滤&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+            <select name="opername">
+            <option value="open">open</option>
+            <option value="closed">closed</option>
+	    <option value="filtered">filtered</option>
+	    <option value="tcp">tcp</option>
+            <option value="http">http</option>
+	    <option value="https">https</option>
+            <option value="mysql">mysql</option>
+            <option value="ftp">ftp</option>
+            <option value="ssh">ssh</option>
+            <option value="redis">redis</option>
+            <option value="mongodb">mongodb</option>
+          </select>
+          <input type="button" name="commit" value="确定" onclick="filternmapdatafunc()">
+        </p>
+      
+      <br><br>
+      <table class="table table-bordered">
+        <tr>
+          <td>
+            nmap端口扫描服务运行状态:&nbsp;&nbsp;
+            <font color="red">
+              {{data5}}
+            </font>
+          </td>
+        </tr>
+     
+        <tr>
+          <th>扫描结果</th>
+        </tr>
+        {% for i in data %}
+        <tr>
+          <td>{{i}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
+    </div>
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

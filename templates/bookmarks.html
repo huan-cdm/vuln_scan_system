@@ -1,0 +1,549 @@
+{% extends "base.html" %}
+
+{% block title %}安全导航{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>安全导航</title>
+	<link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+	<link rel="ico" href="{{ url_for('static', filename='ico/e5.ico') }}" type="image/x-ico">
+	<link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+	<link type="text/css" href="{{ url_for('static', filename='css/style2.css') }}" rel="stylesheet">
+	<link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+	<script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+	<meta name="robots" content="noindex,follow" />
+	
+
+	<script>
+		$(function () {
+	
+		  goPage(1, 10);
+		  var tempOption = "";
+		  for (var i = 1; i <= totalPage; i++) {
+			tempOption += '<option value=' + i + '>' + i + '</option>'
+		  }
+		  $("#jumpWhere").html(tempOption);
+		})
+	
+	
+		var pageSize = 0;//每页显示行数
+		var currentPage_ = 1;//当前页全局变量，用于跳转时判断是否在相同页，在就不跳，否则跳转。
+		var totalPage;//总页数
+		function goPage(pno, psize) {
+		  var itable = document.getElementById("adminTbody");
+		  var num = itable.rows.length;//表格所有行数(所有记录数)
+	
+		  pageSize = psize;//每页显示行数
+		  //总共分几页 
+		  if (num / pageSize > parseInt(num / pageSize)) {
+			totalPage = parseInt(num / pageSize) + 1;
+		  } else {
+			totalPage = parseInt(num / pageSize);
+		  }
+		  var currentPage = pno;//当前页数
+		  currentPage_ = currentPage;
+		  var startRow = (currentPage - 1) * pageSize + 1;
+		  var endRow = currentPage * pageSize;
+		  endRow = (endRow > num) ? num : endRow;
+		  
+		  $("#adminTbody tr").hide();
+		  for (var i = startRow - 1; i < endRow; i++) {
+			$("#adminTbody tr").eq(i).show();
+		  }
+		  var tempStr = "共" + num + "条记录 分" + totalPage + "页 当前第" + currentPage + "页";
+		  document.getElementById("barcon1").innerHTML = tempStr;
+	
+		  if (currentPage > 1) {
+			$("#firstPage").on("click", function () {
+			  goPage(1, psize);
+			}).removeClass("ban");
+			$("#prePage").on("click", function () {
+			  goPage(currentPage - 1, psize);
+			}).removeClass("ban");
+		  } else {
+			$("#firstPage").off("click").addClass("ban");
+			$("#prePage").off("click").addClass("ban");
+		  }
+	
+		  if (currentPage < totalPage) {
+			$("#nextPage").on("click", function () {
+			  goPage(currentPage + 1, psize);
+			}).removeClass("ban")
+			$("#lastPage").on("click", function () {
+			  goPage(totalPage, psize);
+			}).removeClass("ban")
+		  } else {
+			$("#nextPage").off("click").addClass("ban");
+			$("#lastPage").off("click").addClass("ban");
+		  }
+	
+		  $("#jumpWhere").val(currentPage);
+		}
+	
+	
+		function jumpPage() {
+		  var num = parseInt($("#jumpWhere").val());
+		  if (num != currentPage_) {
+			goPage(num, pageSize);
+		  }
+		}
+	
+	  </script>
+
+
+	<script>
+
+	function subtractionfun(value) {
+		
+		$.ajax({
+                url: '/updatebookmarkssubtraction?id='+value,
+                method: 'GET',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('右移成功')
+                },
+                error: function () {
+                    alert('右移出错')
+                },
+                complete: function () {
+                    alert('右移完成')
+                }
+            })
+    }
+	</script>
+
+<script>
+
+	function addfun(value) {
+		
+		$.ajax({
+                url: '/updatebookmarksadd?id='+value,
+                method: 'GET',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('左移成功')
+                },
+                error: function () {
+                    alert('左移出错')
+                },
+                complete: function () {
+                    alert('左移完成')
+                }
+            })
+    }
+	</script>
+
+<script>
+	function deletefun(value) {
+		
+		$.ajax({
+                url: '/deletebookmarks?id='+value,
+                method: 'GET',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('删除成功')
+                },
+                error: function () {
+                    alert('删除出错')
+                },
+                complete: function () {
+                    alert('删除完成')
+                }
+            })
+    }
+	</script>
+
+<script>
+	//重置排序
+	function updatemarksfunc() {
+		
+		$.ajax({
+                url: '/updatebookmarks/',
+                method: 'POST',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('重置排序请求成功')
+                },
+                error: function () {
+                    alert('重置排序请求出错')
+                },
+                complete: function () {
+                    alert('重置排序请求完成')
+                }
+            })
+    }
+	</script>
+	
+<script>
+	//ajax异步添加数据
+  function addbookmarksfunc() {
+	var url = $('input[name="url"]').val();
+	var urlname = $('input[name="urlname"]').val();
+	var titleoper = $('select[name="titleoper"]').val();
+	
+	$.ajax({
+			url: '/addbookmarks/',
+			method: 'POST',
+			data: {
+				  url: url,
+				  urlname: urlname,
+				  titleoper: titleoper
+			
+				  },
+			success: function (res) { 
+				console.log(res)
+				console.log('添加数据请求成功')
+			},
+			error: function () {
+				alert('添加数据请求出错')
+			},
+			complete: function () {
+				alert('添加数据请求完成')
+			}
+		})
+	}
+  
+	  </script>
+
+
+</head>
+
+<body>
+	
+
+	<div class="container">
+		
+		<div class="login">
+			
+			<h4>
+				
+				<img src = "{{ url_for('static', filename='ico/time.ico') }}"/>&nbsp;&nbsp;{{data}}&nbsp;&nbsp;&nbsp; 
+				<img src = "{{ url_for('static', filename='ico/IP.ico') }}"/>&nbsp;&nbsp;{{data2}}&nbsp;&nbsp;
+				<img src = "{{ url_for('static', filename='ico/location.ico') }}"/>&nbsp;&nbsp;{{data1}}&nbsp;&nbsp;
+				{% for i in data3 %}
+				<img src = "{{ url_for('static', filename='ico/calc.ico') }}"/>&nbsp;&nbsp;{{ i[0] }}次
+				{% endfor %}
+				
+			</h4>
+			
+	<form method="post">
+        <p><strong>URL:</strong><input type="text" name="url" value="" required="required"
+            placeholder="https://www.baidu.com/"><br>
+			<strong>名称:</strong><input type="text" name="urlname" value="" required="required"
+            placeholder="百度">
+          &nbsp;&nbsp;&nbsp;
+		<br>
+          <strong>标题:&nbsp;&nbsp;</strong><select name="titleoper">
+            <option value="1">CDN识别</option>
+			<option value="2">子域名</option>
+			<option value="3">指纹识别</option>
+			<option value="4">网站空间搜索</option>
+			<option value="5">综合搜索</option>
+			<option value="6">威胁情报</option>
+			<option value="7">靶场环境</option>
+			<option value="8">解密</option>
+			<option value="9">SRC</option>
+			<option value="10">技术文章</option>
+			<option value="11">身份溯源</option>
+          </select>
+		  <input type="button" name="commit" value="录入" onclick="addbookmarksfunc()">
+        </p>
+      </form>
+
+	  
+        <p><strong>操作:</strong>&nbsp;
+			<input type="button" name="commit" value="重置排序" onclick="updatemarksfunc()">
+		</p>
+
+	<table class="table table-bordered">	
+		<tr>
+			<th>
+				<h4>CDN识别</h4>
+			</th>
+			{% for jj in data4 %}
+			<th>
+				
+				<a href="{{jj[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{jj[1]}}({{jj[3]}})</h5>
+				</a>
+			
+				<span ><a href="#"onclick="deletefun('{{ jj[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;
+				<span ><a href="#"  onclick="subtractionfun('{{ jj[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;
+				<span ><a href="#"  onclick="addfun('{{ jj[2] }}')"><-</a></span>
+				
+			</th>
+			{% endfor %}
+		</tr>
+
+
+
+		<tr>
+			<th>
+				<h4>子域名</h4>
+			</th>
+			{% for aa in data5 %}
+			<th>
+				<a href="{{aa[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{aa[1]}}({{aa[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ aa[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ aa[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ aa[2] }}')"><-</a></span>
+
+			</th>
+			{% endfor %}
+			
+		</tr>
+
+
+		<tr>
+			<th>
+				<h4>指纹识别</h4>
+			</th>
+			{% for bb in data6 %}
+			<th>
+				<a href="{{bb[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{bb[1]}}({{bb[3]}})</h5>
+				</a>
+				
+				<span><a href="#"onclick="deletefun('{{ bb[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ bb[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ bb[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+		</tr>
+
+		<tr>
+			<th>
+				<h4>网络空间搜索</h4>
+			</th>
+			{% for cc in data7 %}
+			<th>
+				<a href="{{cc[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{cc[1]}}({{cc[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ cc[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ cc[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ cc[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+
+		</tr>
+
+
+
+		<tr>
+			<th>
+				<h4>综合搜索</h4>
+			</th>
+			
+			{% for dd in data8 %}
+			<th>
+				<a href="{{dd[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{dd[1]}}({{dd[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ dd[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ dd[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ dd[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+
+		</tr>
+
+
+
+		<tr>
+			<th>
+				<h4>威胁情报</h4>
+			</th>
+			{% for ee in data9 %}
+			<th>
+				<a href="{{ee[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{ee[1]}}({{ee[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ ee[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ ee[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ ee[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+
+		</tr>
+
+
+		<tr>
+			<th>
+				<h4>靶场环境</h4>
+			</th>
+			{% for ff in data10 %}
+			<th>
+				<a href="{{ff[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{ff[1]}}({{ff[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ ff[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ ff[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ ff[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+		</tr>
+
+
+
+
+		<tr>
+			<th>
+				<h4>解密</h4>
+			</th>
+			{% for gg in data11 %}
+			<th>
+				<a href="{{gg[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{gg[1]}}({{gg[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ gg[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ gg[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ gg[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+		</tr>
+
+
+
+		<tr>
+			<th>
+				<h4>SRC</h4>
+			</th>
+			{% for hh in data12 %}
+			<th>
+				<a href="{{hh[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{hh[1]}}({{hh[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ hh[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ hh[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ hh[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+		</tr>
+
+		<tr>
+			<th>
+				<h4>技术文章</h4>
+			</th>
+			{% for kk in data13 %}
+			<th>
+				<a href="{{kk[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{kk[1]}}({{kk[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ kk[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ kk[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ kk[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+			
+		</tr>
+
+		<tr>
+			<th>
+				<h4>身份溯源</h4>
+			</th>
+			{% for mm in data14 %}
+			<th>
+				<a href="{{mm[0]}}" style='text-decoration:none;' target="_blank">
+					<h5>{{mm[1]}}({{mm[3]}})</h5>
+				</a>
+				<span><a href="#"onclick="deletefun('{{ mm[2] }}')">X</a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="subtractionfun('{{ mm[2] }}')">-></a></span>&nbsp;&nbsp;&nbsp;<span><a href="#"  onclick="addfun('{{ mm[2] }}')"><-</a></span>
+			</th>
+			{% endfor %}
+			
+		</tr>
+	</table>
+		</div>
+		<div class="login-help">
+		</div>
+	</div>
+	<div style="text-align:center;clear:both">
+	</div>
+</body>
+
+</html>
+{% endblock %}
+<!DOCTYPE HTML>
+<html lang="zxx">
+
+<head>
+	<title>Home</title>
+	<!-- Meta tag Keywords -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8" />
+	<meta name="keywords" content="" />
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!-- Meta tag Keywords -->
+	<!-- css files -->
+	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+	<!-- Style-CSS -->
+	<link rel="stylesheet" href="css/fontawesome-all.css">
+	<!-- Font-Awesome-Icons-CSS -->
+	<!-- //css files -->
+	<!-- web-fonts -->
+	<link href="http://maxcdn.bootstrapcdn.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i"
+		rel="stylesheet">
+	<link href="http://maxcdn.bootstrapcdn.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i"
+		rel="stylesheet">
+	<!-- //web-fonts -->
+</head>
+
+<body>
+	<!-- bg effect -->
+	<div id="bg">
+		<canvas></canvas>
+		<canvas></canvas>
+		<canvas></canvas>
+	</div>
+	<!-- //bg effect -->
+	<!-- title -->
+	<h1>Effect Login Form</h1>
+	<!-- //title -->
+	<!-- content -->
+	<div class="sub-main-w3">
+		<form action="#" method="post">
+			<h2>Login Now
+				<i class="fas fa-level-down-alt"></i>
+			</h2>
+			<div class="form-style-agile">
+				<label>
+					<i class="fas fa-user"></i>
+					Username
+				</label>
+				<input placeholder="Username" name="Name" type="text" required="">
+			</div>
+			<div class="form-style-agile">
+				<label>
+					<i class="fas fa-unlock-alt"></i>
+					Password
+				</label>
+				<input placeholder="Password" name="Password" type="password" required="">
+			</div>
+			<!-- checkbox -->
+			<div class="wthree-text">
+				<ul>
+					<li>
+						<label class="anim">
+							<input type="checkbox" class="checkbox" required="">
+							<span>Stay Signed In</span>
+						</label>
+					</li>
+					<li>
+						<a href="#">Forgot Password?</a>
+					</li>
+				</ul>
+			</div>
+			<!-- //checkbox -->
+			<input type="submit" value="Log In">
+		</form>
+	</div>
+	
+	<div class="footer">
+		<p>Copyright &copy; 2018.Company name All rights reserved.<a target="_blank"
+				href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+	</div>
+	
+	<script src="js/jquery-3.3.1.min.js"></script>
+
+	<script src="js/canva_moving_effect.js"></script>
+	
+
+</body>
+
+</html>

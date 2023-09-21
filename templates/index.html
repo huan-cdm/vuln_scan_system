@@ -1,0 +1,452 @@
+{% extends "base.html" %}
+
+{% block title %}漏洞库管理{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>漏洞库管理</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link rel="ico" href="{{ url_for('static', filename='ico/e5.ico') }}" type="image/x-ico">
+  <link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript" src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for( 'static',filename='js/indexcommon.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+
+
+</head>
+
+<body>
+  <script>
+    $(function () {
+      goPage(1, 10);
+      var tempOption = "";
+      for (var i = 1; i <= totalPage; i++) {
+        tempOption += '<option value=' + i + '>' + i + '</option>'
+      }
+      $("#jumpWhere").html(tempOption);
+    })
+
+
+    var pageSize = 0;//每页显示行数
+    var currentPage_ = 1;//当前页全局变量，用于跳转时判断是否在相同页，在就不跳，否则跳转。
+    var totalPage;//总页数
+    function goPage(pno, psize) {
+      var itable = document.getElementById("adminTbody");
+      var num = itable.rows.length;//表格所有行数(所有记录数)
+
+      pageSize = psize;//每页显示行数
+      //总共分几页 
+      if (num / pageSize > parseInt(num / pageSize)) {
+        totalPage = parseInt(num / pageSize) + 1;
+      } else {
+        totalPage = parseInt(num / pageSize);
+      }
+      var currentPage = pno;//当前页数
+      currentPage_ = currentPage;
+      var startRow = (currentPage - 1) * pageSize + 1;
+      var endRow = currentPage * pageSize;
+      endRow = (endRow > num) ? num : endRow;
+
+      $("#adminTbody tr").hide();
+      for (var i = startRow - 1; i < endRow; i++) {
+        $("#adminTbody tr").eq(i).show();
+      }
+      var tempStr = "共" + num + "条记录 分" + totalPage + "页 当前第" + currentPage + "页";
+      document.getElementById("barcon1").innerHTML = tempStr;
+
+      if (currentPage > 1) {
+        $("#firstPage").on("click", function () {
+          goPage(1, psize);
+        }).removeClass("ban");
+        $("#prePage").on("click", function () {
+          goPage(currentPage - 1, psize);
+        }).removeClass("ban");
+      } else {
+        $("#firstPage").off("click").addClass("ban");
+        $("#prePage").off("click").addClass("ban");
+      }
+
+      if (currentPage < totalPage) {
+        $("#nextPage").on("click", function () {
+          goPage(currentPage + 1, psize);
+        }).removeClass("ban")
+        $("#lastPage").on("click", function () {
+          goPage(totalPage, psize);
+        }).removeClass("ban")
+      } else {
+        $("#nextPage").off("click").addClass("ban");
+        $("#lastPage").off("click").addClass("ban");
+      }
+
+      $("#jumpWhere").val(currentPage);
+    }
+
+
+    function jumpPage() {
+      var num = parseInt($("#jumpWhere").val());
+      if (num != currentPage_) {
+        goPage(num, pageSize);
+      }
+    }
+  </script>
+
+  <script language="javascript">
+    //打开菜单按钮
+    function startlogofunc() {
+      document.getElementById("button1").disabled = false;
+      document.getElementById("button2").disabled = false;
+      document.getElementById("button3").disabled = false;
+      document.getElementById("button4").disabled = false;
+      document.getElementById("button5").disabled = false;
+    }
+  </script>
+
+  <script language="javascript">
+    //关闭菜单按钮
+    function stoplogofunc() {
+      document.getElementById("button1").disabled = true;
+      document.getElementById("button2").disabled = true;
+      document.getElementById("button3").disabled = true;
+      document.getElementById("button4").disabled = true;
+      document.getElementById("button5").disabled = true;
+    }
+  </script>
+
+  <script language="javascript">
+    //下拉列表数据传给input框删除使用
+    function opbyid2func() {
+      var obj = document.getElementById('opbyid2'); //定位id
+      var index = obj.selectedIndex; // 选中索引
+      var text = obj.options[index].text; // 选中文本
+      var value = obj.options[index].value; // 选中值
+      var valuename = document.getElementById("input1");
+      valuename.value = value;
+    }
+  </script>
+
+  <script language="javascript">
+    //下拉列表数据传给input框删除使用
+    function opbyid1func() {
+      var obj = document.getElementById('opbyid'); //定位id
+      var index = obj.selectedIndex; // 选中索引
+      var text = obj.options[index].text; // 选中文本
+      var value = obj.options[index].value; // 选中值
+      var valuename = document.getElementById("input1");
+      valuename.value = value;
+    }
+  </script>
+
+  <script language="javascript">
+    //下拉列表数据传给input框删除使用
+    function opbyid5func() {
+      var obj = document.getElementById('optionbyid1'); //定位id
+      var index = obj.selectedIndex; // 选中索引
+      var text = obj.options[index].text; // 选中文本
+      var value = obj.options[index].value; // 选中值
+      var valuename = document.getElementById("input1");
+      valuename.value = value;
+    }
+  </script>
+
+  <script>
+    //ajax异步异步删除黑名单
+    function deletevulnnamebyvulnnamefunc() {
+      var vulnnamebyvulnname = $('input[name="vulnnamebyvulnname"]').val();
+      $.ajax({
+        url: '/deletevulnnamebyvulnname?name=' + vulnnamebyvulnname,
+        method: 'GET',
+        success: function (res) {
+          console.log(res)
+          console.log('漏洞标题' + vulnnamebyvulnname + '删除成功')
+        },
+        error: function () {
+          alert('删除错误')
+        },
+        complete: function () {
+          alert('漏洞标题' + vulnnamebyvulnname + '删除完成')
+        }
+      })
+    }
+  </script>
+
+  <script language="javascript">
+    //清空input框内容
+    function clearinputfunc() {
+      document.getElementById('clearinput1').value = '';
+      document.getElementById('clearinput2').value = '';
+      document.getElementById('input1').value = '';
+      document.getElementById('input3').value = '';
+      document.getElementById('input4').value = '';
+      document.getElementById('input5').value = '';
+    }
+  </script>
+
+
+
+
+  <div class="container">
+    <div class="login">
+      <span>
+        <strong>操作按钮&nbsp;&nbsp;</strong>
+        <a href="/index/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+        </a>
+        <a href="/mysqldownload/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/download2.ico') }}">
+        </a>
+        <a href="/ipdownload/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/ipdownload.ico') }}">
+        </a>
+        <a href="###" style='text-decoration:none;' onclick="startvulnfunc()">
+          <img src="{{ url_for('static', filename='ico/start.ico') }}">
+        </a>
+        <a href="###" style='text-decoration:none;' onclick="stopvulnfunc()">
+          <img src="{{ url_for('static', filename='ico/stop1.ico') }}">
+        </a>
+
+        <a href="###" style='text-decoration:none;' onclick="clearesfunc()">
+          <img src="{{ url_for('static', filename='ico/esclear.ico') }}">
+        </a>
+        <a href="###" style='text-decoration:none;' onclick="addesfunc()">
+          <img src="{{ url_for('static', filename='ico/esadd.ico') }}">
+        </a>
+        <a href="###" style='text-decoration:none;' onclick="startlogofunc()">
+          <img src="{{ url_for('static', filename='ico/logostart.ico') }}">
+        </a>
+        <a href="###" style='text-decoration:none;' onclick="stoplogofunc()">
+          <img src="{{ url_for('static', filename='ico/logostop.ico') }}">
+        </a>
+        <a href="###" style='text-decoration:none;' onclick="clearinputfunc()">
+          <img src="{{ url_for('static', filename='ico/clearinput.ico') }}">
+        </a>
+      </span>
+      <div id="div1" style="display:none;">
+        <span>
+          <strong>标题录入&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+          <input type="text" name="vulnname" required="required" placeholder="漏洞标题" id="clearinput1">
+          <input type="text" name="ip" required="required" placeholder="IP地址" id="clearinput2">
+          <input type="button" name="commit" value="录入" onclick="addvulnfunc()" id="button3" disabled=true><br>
+          <font color="red" id="titlespanid"></font>
+        </span><br>
+        <!-- 
+        <span>
+          <strong>网址录入&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+          <input type="text" name="vulnurl"  required="required" placeholder="漏洞URL:https://www.baidu.com/actuator" id="input5">
+          <input type="button" name="commit" value="录入" onclick="addvulnurlfunc()" id="button5" disabled = true>
+          <font color="red" id="urlspanid"></font>
+        </span>
+        <br>
+	-->
+        <span>
+          <strong>标题删除&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+          <input type="text" name="vulnnamebyvulnname" required="required" placeholder="漏洞标题" id="input1">
+          <input type="button" name="commit" value="删除" onclick="deletevulnnamebyvulnnamefunc()" id="button4"
+            disabled=true>
+        </span>
+
+        <br>
+        <strong>异步查询[1]&nbsp;&nbsp;&nbsp;</strong>
+        <input type="text" name="ipbyajax" onmouseout="selectvulnnamebyipfunc()" placeholder="通过IP地址查询漏洞标题" id="input3">
+
+        <select id="opbyid" onclick="opbyid1func()">
+          <option>暂无数据</option>
+        </select>
+        <br><br>
+        <p><strong>异步查询[2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong><select name="oper" id="class_id"
+            onmouseout="selectvulntimebyajaxfunc()">
+            <option value="1">近1天</option>
+            <option value="2">近7天</option>
+            <option value="3">近30天</option>
+            <option value="4">全部</option>
+          </select>
+          <select id="optionbyid1" onclick="opbyid5func()">
+            <option>暂无数据</option>
+          </select>
+          <select id="optionbyid2">
+            <option>暂无数据</option>
+          </select>
+          <span>本次查询出:</span>
+          <font color="red" id="optionbyid3"></font>
+          <span>条数据</span>
+        </p>
+        <p>
+          <br>
+          <strong>异步查询[3]&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+          <input type="text" name="vulnnamekeyajax" onmouseout="vulnnamekeyajaxfunc()" placeholder="通过关键字查询漏洞标题"
+            id="input4">
+          <select id="opbyid2" onclick="opbyid2func()">
+            <option>暂无数据</option>
+          </select>
+          <select id="opbyid5">
+            <option>暂无数据</option>
+          </select>
+          <select id="opbyid6">
+            <option>暂无数据</option>
+          </select>
+          <span>本次查询出:</span>
+          <font color="red" id="conutid"></font>
+          <span>条数据</span>
+      </div>
+
+      <div id="div" style="display:none;">
+        <strong>修改操作:</strong>
+        <input type="text" id="vulnname" name="vulnnames">
+        <input type="text" id="ip" name="ips">
+        <input type="hidden" id="id" name="ids">
+        <input type="button" value="确定" onclick="updatevulnfunc()" />&nbsp;&nbsp;
+        <input type="button" value="返回" onclick="hidd()" />
+      </div><br>
+      <font color="red">
+        {{data5}}
+      </font>
+      </p>
+
+
+      <table class="table table-bordered">
+        <tr>
+          <th>漏洞标题</th>
+          <th>IP地址 </th>
+          <th>上报时间</th>
+          <th>操作</th>
+        </tr>
+        <tbody id="adminTbody">
+          {% for i in data %}
+          <tr>
+            <td>{{ i[0] }}</td>
+            <td>{{ i[1] }}</td>
+            <td>{{ i[2] }}</td>
+            <td>
+
+              <input type="button" name="commit" value="删除" onclick="deletefunc('{{ i[3] }}')" id="button1"
+                disabled=true>
+              <input type="button" name="commit" value="修改" onclick="selectbyidfunc('{{ i[3] }}')" id="button2"
+                disabled=true>
+
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div id="barcon" class="barcon">
+      <div id="barcon1" class="barcon1"></div>
+      <div id="barcon2" class="barcon2">
+        <ul>
+          <li><a href="###" id="firstPage">首页</a></li>
+          <li><a href="###" id="prePage">上一页</a></li>
+          <li><a href="###" id="nextPage">下一页</a></li>
+          <li><a href="###" id="lastPage">尾页</a></li>
+          <li><select id="jumpWhere">
+            </select></li>
+          <li><a href="###" id="jumpPage" οnclick="jumpPage()">跳转</a></li>
+        </ul>
+      </div>
+    </div>
+
+
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}
+<!DOCTYPE HTML>
+<html lang="zxx">
+
+<head>
+  <title>Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="keywords" content="" />
+  <script>
+    addEventListener("load", function () {
+      setTimeout(hideURLbar, 0);
+    }, false);
+
+    function hideURLbar() {
+      window.scrollTo(0, 1);
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+
+  <link rel="stylesheet" href="css/fontawesome-all.css">
+
+  <link href="http://maxcdn.bootstrapcdn.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i"
+    rel="stylesheet">
+  <link href="http://maxcdn.bootstrapcdn.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i"
+    rel="stylesheet">
+
+</head>
+
+<body>
+
+  <div id="bg">
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+  </div>
+
+  <h1>Effect Login Form</h1>
+
+  <div class="sub-main-w3">
+    <form action="#" method="post">
+      <h2>Login Now
+        <i class="fas fa-level-down-alt"></i>
+      </h2>
+      <div class="form-style-agile">
+        <label>
+          <i class="fas fa-user"></i>
+          Username
+        </label>
+        <input placeholder="Username" name="Name" type="text" required="">
+      </div>
+      <div class="form-style-agile">
+        <label>
+          <i class="fas fa-unlock-alt"></i>
+          Password
+        </label>
+        <input placeholder="Password" name="Password" type="password" required="">
+      </div>
+
+      <div class="wthree-text">
+        <ul>
+          <li>
+            <label class="anim">
+              <input type="checkbox" class="checkbox" required="">
+              <span>Stay Signed In</span>
+            </label>
+          </li>
+          <li>
+            <a href="#">Forgot Password?</a>
+          </li>
+        </ul>
+      </div>
+
+      <input type="submit" value="Log In">
+    </form>
+  </div>
+
+  <div class="footer">
+    <p>Copyright &copy; 2018.Company name All rights reserved.<a target="_blank"
+        href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+  </div>
+
+  <script src="js/jquery-3.3.1.min.js"></script>
+
+  <script src="js/canva_moving_effect.js"></script>
+
+
+</body>
+
+</html>

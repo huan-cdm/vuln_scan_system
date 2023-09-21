@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}用户管理{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>用户管理</title>
+<link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+<link rel="ico" href="{{ url_for('static', filename='ico/e5.ico') }}" type="image/x-ico">
+<link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+<link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+<script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script> 
+<meta name="robots" content="noindex,follow" />
+<script>
+//ajax异步删除数据
+	function deleteuserfunc(value) {
+		
+		$.ajax({
+				url: '/deleteuserbyid/?id='+value,
+				method: 'GET',
+				success: function (res) { 
+					console.log(res)
+					console.log('删除成功')
+				},
+				error: function () {
+					alert('删除出错')
+				},
+				complete: function () {
+					alert('删除完成')
+				}
+			})
+		}
+</script>
+<script type="text/javascript">
+	function hiduser(){
+		document.getElementById('div').style.display="none";
+	}
+</script>
+
+<script type="text/javascript">
+	function selectuserbyidfunc(value){
+		document.getElementById('div').style.display="block";
+		$.ajax({
+          url: '/selectuserbyid/?id='+value,
+          method: 'GET',
+          success: function (res) { 
+            console.log(res)
+          },
+          error: function () {
+              
+          },
+          complete: function () {
+              
+          }
+        })
+
+		$.getJSON("/selectuserbyidajax/",
+		      function(info){
+            document.getElementById("username").value = info.username_data_1;
+            document.getElementById("password").value = info.password_data_1;
+            document.getElementById("id").value = info.id_data_1;
+		      })          
+	}
+</script>
+
+<script type="text/javascript">
+	//ajax异步修改数据
+  function updateuserbyidfunc() {
+	var username1 = $('input[name="username1"]').val();
+	var password1 = $('input[name="password1"]').val();
+	var id1 = $('input[name="id1"]').val();
+	
+	$.ajax({
+			url: '/updateuserbyid/',
+			method: 'POST',
+			data: {
+        		username1: username1,
+        		password1: password1,
+        		id1: id1
+				},
+			success: function (res) { 
+				console.log(res)
+				console.log('修改成功')
+			},
+			error: function () {
+				alert('修改失败')
+			},
+      complete: function () {
+				alert('修改成功')
+			}
+		})
+	}
+	  </script>
+</head>
+<body>
+
+    
+  <div class="container">
+    <div class="login">
+     
+		<h1 style="text-align:left">
+			<a href="/userlist/" style='text-decoration:none;'>
+			<img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+			</a></h1>
+
+			<div id="div" style="display: none;">
+				<input type="text" id="username"  name="username1">
+				<input type="text"  id="password"  name="password1">
+				<input type="hidden"  id="id"  name="id1">
+			   
+				<input type="button" value="确定" onclick="updateuserbyidfunc()"/>&nbsp;&nbsp;
+				<input type="button" value="返回" onclick="hiduser()"/>
+		   
+			</div>
+      <table class="table table-bordered">
+        <tr>
+            <th>账号</th>
+            <th>密码</th>
+            <th>操作</th>
+        </tr>
+       
+            {% for i in data %}
+                <tr>
+                    <td>{{ i[0] }}</td>
+                    <td>{{ i[1] }}</td>
+                    <td>
+			      
+				  <a href="#" style='text-decoration:none;' onclick="deleteuserfunc('{{ i[2] }}')">删除</a>
+                  <!--<a href="/selectuserbyid/?id={{ i[2] }}" >修改</a>-->
+				  <a href="#" style='text-decoration:none;' onclick="selectuserbyidfunc('{{ i[2] }}')">修改</a>
+                    </td>
+                </tr>
+        {% endfor %}
+   
+        </table>
+
+    </div>
+
+
+  
+
+    <div class="login-help">
+    </div>
+  </div>
+<div style="text-align:center;clear:both">
+</div>
+</body>
+</html>
+{% endblock %}
+<!DOCTYPE HTML>
+<html lang="zxx">
+
+<head>
+	<title>Home</title>
+	<!-- Meta tag Keywords -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8" />
+	<meta name="keywords" content=""
+	/>
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!-- Meta tag Keywords -->
+	<!-- css files -->
+	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+	<!-- Style-CSS -->
+	<link rel="stylesheet" href="css/fontawesome-all.css">
+	<!-- Font-Awesome-Icons-CSS -->
+	<!-- //css files -->
+	<!-- web-fonts -->
+	<link href="http://maxcdn.bootstrapcdn.com/css?family=Josefin+Sans:100,100i,300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+	<link href="http://maxcdn.bootstrapcdn.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+	<!-- //web-fonts -->
+</head>
+
+<body>
+	<!-- bg effect -->
+	<div id="bg">
+		<canvas></canvas>
+		<canvas></canvas>
+		<canvas></canvas>
+	</div>
+	<!-- //bg effect -->
+	<!-- title -->
+	<h1>Effect Login Form</h1>
+	<!-- //title -->
+	<!-- content -->
+	<div class="sub-main-w3">
+		<form action="#" method="post">
+			<h2>Login Now
+				<i class="fas fa-level-down-alt"></i>
+			</h2>
+			<div class="form-style-agile">
+				<label>
+					<i class="fas fa-user"></i>
+					Username
+				</label>
+				<input placeholder="Username" name="Name" type="text" required="">
+			</div>
+			<div class="form-style-agile">
+				<label>
+					<i class="fas fa-unlock-alt"></i>
+					Password
+				</label>
+				<input placeholder="Password" name="Password" type="password" required="">
+			</div>
+			<!-- checkbox -->
+			<div class="wthree-text">
+				<ul>
+					<li>
+						<label class="anim">
+							<input type="checkbox" class="checkbox" required="">
+							<span>Stay Signed In</span>
+						</label>
+					</li>
+					<li>
+						<a href="#">Forgot Password?</a>
+					</li>
+				</ul>
+			</div>
+			<!-- //checkbox -->
+			<input type="submit" value="Log In">
+		</form>
+	</div>
+	<!-- //content -->
+
+	<!-- copyright -->
+	<div class="footer">
+		<p>Copyright &copy; 2018.Company name All rights reserved.<a target="_blank" href="http://sc.chinaz.com/moban/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a></p>
+	</div>
+	<!-- //copyright -->
+
+	<!-- Jquery -->
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<!-- //Jquery -->
+
+	<!-- effect js -->
+	<script src="js/canva_moving_effect.js"></script>
+	<!-- //effect js -->
+
+</body>
+
+</html>

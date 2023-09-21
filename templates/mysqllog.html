@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}MySQL操作日志{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>MySQL操作日志</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <meta name="robots" content="noindex,follow" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+      
+      <h1>MySQL操作日志</h1>
+
+      <a href="/clearmysqllog/" style='text-decoration:none;'>清空日志</a>
+
+      <br>
+      日志大小:{{data1}}
+      <table class="table table-bordered">
+        <tr>
+          <th style=" text-align:center;">MySQL操作日志</th>
+
+
+        </tr>
+        {% for i in data %}
+        <tr>
+
+          <td>{{i}}</td>
+
+
+        </tr>
+        {% endfor %}
+      </table>
+
+    </div>
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

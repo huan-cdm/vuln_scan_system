@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}字典生成{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>字典生成</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+  <script>
+    //ajax异步生成字典
+  function gendic() {
+    var start = $('select[name="start"]').val();
+    var end = $('select[name="end"]').val();
+    var namestr = $('input[name="namestr"]').val();
+    var oper = $('select[name="oper"]').val();
+    $.ajax({
+            url: '/dicgeneratefunc/',
+            method: 'POST',
+            data: {
+                start: start,
+                end: end,
+                namestr: namestr,
+                oper: oper
+                  
+                  },
+            success: function (res) { 
+                console.log(res)
+                console.log('生成字典任务请求成功')
+            },
+            error: function () {
+                alert('生成字典任务请求出错')
+            },
+            complete: function () {
+                alert('生成字典任务请求完成')
+            }
+        })
+  }
+  </script>
+
+<script>
+  //ajax异步下载字典
+function download() {
+  $.ajax({
+          url: '/diccdownload/',
+          method: 'POST',
+          success: function (res) { 
+              console.log(res)
+              console.log('字典下载任务请求成功')
+          },
+          error: function () {
+              alert('字典下载任务请求出错')
+          },
+          complete: function () {
+              alert('字典下载任务请求完成')
+          }
+      })
+}
+</script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+      
+
+        <h1 style="text-align:left">
+          <a href="/dicgenerate/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+          </a></h1>
+      <form method="post">
+        <p><strong>起始:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong><select name="start">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select></p>
+        <p><strong>结束:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong><select name="end">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select></p>
+
+        <p><strong>选项:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong><select name="oper">
+            <option value="1">默认</option>
+            <option value="2">自定义</option>
+
+          </select></p>
+        <p><strong>字符集:&nbsp;&nbsp;&nbsp;&nbsp;</strong><input type="text" name="namestr" value="{{data1}}"
+            required="required" placeholder="%：数字  @：小写字母  ,：大写字母  ^：符号">
+            <input type="button" name="commit" value="生成" onclick="gendic()">
+        </p>
+      </form>
+      <br>
+      <form method="post" action="/diccdownload/">
+
+        <strong>数据下载:</strong>
+        
+        <input type="submit" name="commit" value="下载">
+      </form>
+
+
+      <table class="table table-bordered">
+      </table>
+    </div>
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

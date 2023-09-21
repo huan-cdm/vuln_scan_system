@@ -1,0 +1,702 @@
+{% extends "base.html" %}
+
+{% block title %}漏洞扫描{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>漏洞扫描</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript" src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for( 'static',filename='js/quanfanxuan.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for( 'static',filename='js/dirsearchcommon.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+
+
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+
+  <script>
+
+    $(function () {
+
+      goPage(1, 10000);
+      var tempOption = "";
+      for (var i = 1; i <= totalPage; i++) {
+        tempOption += '<option value=' + i + '>' + i + '</option>'
+      }
+      $("#jumpWhere").html(tempOption);
+    })
+
+
+    var pageSize = 0;//每页显示行数
+    var currentPage_ = 1;//当前页全局变量，用于跳转时判断是否在相同页，在就不跳，否则跳转。
+    var totalPage;//总页数
+    function goPage(pno, psize) {
+      var itable = document.getElementById("adminTbody");
+      var num = itable.rows.length;//表格所有行数(所有记录数)
+
+      pageSize = psize;//每页显示行数
+      //总共分几页 
+      if (num / pageSize > parseInt(num / pageSize)) {
+        totalPage = parseInt(num / pageSize) + 1;
+      } else {
+        totalPage = parseInt(num / pageSize);
+      }
+      var currentPage = pno;//当前页数
+      currentPage_ = currentPage;
+      var startRow = (currentPage - 1) * pageSize + 1;
+      var endRow = currentPage * pageSize;
+      endRow = (endRow > num) ? num : endRow;
+
+      $("#adminTbody tr").hide();
+      for (var i = startRow - 1; i < endRow; i++) {
+        $("#adminTbody tr").eq(i).show();
+      }
+      var tempStr = "共" + num + "条记录 分" + totalPage + "页 当前第" + currentPage + "页";
+      document.getElementById("barcon1").innerHTML = tempStr;
+
+      if (currentPage > 1) {
+        $("#firstPage").on("click", function () {
+          goPage(1, psize);
+        }).removeClass("ban");
+        $("#prePage").on("click", function () {
+          goPage(currentPage - 1, psize);
+        }).removeClass("ban");
+      } else {
+        $("#firstPage").off("click").addClass("ban");
+        $("#prePage").off("click").addClass("ban");
+      }
+
+      if (currentPage < totalPage) {
+        $("#nextPage").on("click", function () {
+          goPage(currentPage + 1, psize);
+        }).removeClass("ban")
+        $("#lastPage").on("click", function () {
+          goPage(totalPage, psize);
+        }).removeClass("ban")
+      } else {
+        $("#nextPage").off("click").addClass("ban");
+        $("#lastPage").off("click").addClass("ban");
+      }
+
+      $("#jumpWhere").val(currentPage);
+    }
+
+
+    function jumpPage() {
+      var num = parseInt($("#jumpWhere").val());
+      if (num != currentPage_) {
+        goPage(num, pageSize);
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+
+      <div id="myModal" class="modal">
+        <div class="modal-content">
+
+          <p id="pidshow"></p>
+        </div>
+      </div>
+
+      <p>&nbsp;<strong>文件扩展名</strong>&nbsp;&nbsp;<select name="filename">
+          <option value="php,aspx,jsp,html,js">all</option>
+          <option value="php">php</option>
+          <option value="jsp">jsp</option>
+          <option value="aspx">aspx</option>
+          <option value="html">html</option>
+          <option value="js">js</option>
+        </select>
+
+        &nbsp;&nbsp;
+        <strong>线程数</strong>&nbsp;&nbsp;<select name="thread">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+        &nbsp;&nbsp;
+        <strong>状态码</strong>&nbsp;&nbsp;
+        <select name="statuscode">
+          <option value="200">200</option>
+          <option value="301">301</option>
+          <option value="302">302</option>
+          <option value="404">404</option>
+          <option value="403">403</option>
+          <option value="500">500</option>
+          <option value="502">502</option>
+          <option value="200,301,302,403,404,500,502">all</option>
+        </select>
+        &nbsp;&nbsp;
+        <strong>递归级别</strong>&nbsp;&nbsp;<select name="level">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        &nbsp;&nbsp;
+        <strong>字典</strong>&nbsp;&nbsp;<select name="dict">
+          <option value="/TIP/flask_cnvd/dirsearch/db/Unauthorizedset.txt">未授权访问字典</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/Arbitrary_file_reading">GlassFish任意文件读取漏洞</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/mobile_xinxigang.txt">中国移动信息港Actuator组件</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/swagger.txt">Spring Boot Actuator未授权访问</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/Hadoop.txt">Hadoop未授权访问</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/Druid.txt">Druid未授权访问</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/Elasticsearch.txt">Elasticsearch未授权访问</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/jboss.txt">JBoss未授权访问</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/Jenkins.txt">Jenkins未授权访问</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/kibana.txt">kibana未授权访问</option>
+          <option value="/TIP/flask_cnvd/dirsearch/db/solr.txt">solr未授权访问</option>
+        </select>
+      </p>
+
+      <p>&nbsp;
+        <strong>组件名称</strong>&nbsp;&nbsp;
+        <select name="component_value">
+          <option value="all">all</option>
+          <option value="activemq">activemq</option>
+          <option value="flink">flink</option>
+          <option value="shiro">shiro</option>
+          <option value="solr">solr</option>
+          <option value="struts2">struts2</option>
+          <option value="tomcat">tomcat</option>
+          <option value="unomi">unomi</option>
+          <option value="drupal">drupal</option>
+          <option value="elasticsearch">elasticsearch</option>
+          <option value="fastjson">fastjson</option>
+          <option value="jenkins">jenkins</option>
+          <option value="laravel">laravel</option>
+          <option value="nexus">nexus</option>
+          <option value="weblogic">weblogic</option>
+          <option value="jboss">jboss</option>
+          <option value="spring">spring</option>
+          <option value="thinkphp">thinkphp</option>
+          <option value="druid">druid</option>
+          <option value="exchange">exchange</option>
+          <option value="nodejs">nodejs</option>
+          <option value="saltstack">saltstack</option>
+          <option value="vmware">vmware</option>
+          <option value="bigip">bigip</option>
+          <option value="ofbiz">ofbiz</option>
+          <option value="coremail">coremail</option>
+          <option value="ecology">ecology</option>
+          <option value="eyou">eyou</option>
+          <option value="qianxin">qianxin</option>
+          <option value="ruijie">ruijie</option>
+        </select>&nbsp;&nbsp;
+        <strong>线程数量(默认10个线程)</strong>&nbsp;&nbsp;
+        <select name="thread_value">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
+        </select>&nbsp;&nbsp;
+        <strong>超时时间(默认5秒)</strong>&nbsp;&nbsp;
+        <select name="timeout_value">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+        </select>&nbsp;&nbsp;
+        <strong>延时时间(默认0秒)</strong>&nbsp;&nbsp;
+        <select name="delaytime_value">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>&nbsp;&nbsp;
+      </p>
+
+      <p>
+        <strong>Nuclei参数</strong>&nbsp;&nbsp;
+        <select name="nucleu_value_name" onmouseout="nucleishowtemplatefunc()" id="nucleu_value_name_id">
+          <option value="/root/nuclei-templates/dns">dns</option>
+          <option value="/root/nuclei-templates/helpers">helpers</option>
+          <option value="/root/nuclei-templates/miscellaneous">miscellaneous</option>
+          <option value="/root/nuclei-templates/technologies">technologies</option>
+          <option value="/root/nuclei-templates/workflows">workflows</option>
+          <option value="/root/nuclei-templates/file">file</option>
+          <option value="/root/nuclei-templates/http">http</option>
+          <option value="/root/nuclei-templates/misconfiguration">misconfiguration</option>
+          <option value="/root/nuclei-templates/default-logins">default-logins</option>
+          <option value="/root/nuclei-templates/headless">headless</option>
+          <option value="/root/nuclei-templates/network">network</option>
+          <option value="/root/nuclei-templates/ssl">ssl</option>
+        </select>
+
+        <select id="nucleibyid1">
+          <option>暂无数据</option>
+        </select>&nbsp;&nbsp;
+        <font color="red" id="nucleibyid2"></font>
+      </p><br><br>
+
+      <table class="table table-bordered">
+
+        <tr>
+          <td style="display:none;" id="blacklistshowid">
+            <!--黑名单查看-->
+
+            <strong>扫描前黑名单</strong>&nbsp;&nbsp;
+            <select id="opbyid6" onclick="opbyid6func()">
+              <option value="">--请选择--</option>
+            </select>
+
+            <input type="text" name="beforeblackname" required="required" value="" placeholder="删除扫描前黑名单" id="input6">
+            <input type="button" name="commit" value="删除" onclick="deletedirsearcscanbeforehblackbynamefunc()"><br>
+
+            <strong>扫描后黑名单</strong>&nbsp;&nbsp;
+            <select id="opbyid3" onclick="opbyid3func()">
+              <option value="">--请选择--</option>
+            </select>
+            <input type="text" name="blackname" required="required" value="" placeholder="删除扫描后黑名单" id="input1">
+            <input type="button" name="commit" value="删除" onclick="deletedirsearchblackbynamefunc()">
+            <input type="button" name="commit" value="返回" onclick="blacklistshowlistfunc()">
+
+          </td>
+
+          <td style="display:none;" id="blacklistshowid1">
+            <font color="red" id="scanbeforefontid"></font><br>
+            <font color="red" id="scanafterfontid"></font>
+          </td>
+
+
+          <td style="display:none;" id="Whitelistshowid">
+            <input type="text" name="keyvalue1" value="" required="required" placeholder="添加白名单">
+            <input type="button" name="commit" value="提交" onclick="filterdirsearchdatabywhitefunc()">
+            <select id="opbyid4" onclick="opbyid4func()">
+              <option>--请选择--</option>
+            </select>
+
+            <input type="text" name="whitename" required="required" value="" placeholder="删除白名单" id="input2">
+            <input type="button" name="commit" value="删除" onclick="deletedirsearchwhitebynamefunc()">
+            <input type="button" name="commit" value="返回" onclick="Whitelistshowlistfunc()">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>目录扫描</strong>
+            <a href="/dirsearchscan/" style='text-decoration:none;'>
+              <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+            </a>
+            <a href="/dirsearchfiledownload/" style='text-decoration:none;'>
+              <img src="{{ url_for('static', filename='ico/download2.ico') }}">
+            </a>
+
+            <a href="###" style='text-decoration:none;' onclick="startlogofunc()">
+              <img src="{{ url_for('static', filename='ico/logostart.ico') }}">
+            </a>
+            <a href="###" style='text-decoration:none;' onclick="stoplogofunc()">
+              <img src="{{ url_for('static', filename='ico/logostop.ico') }}">
+            </a>
+            <a href="###" style='text-decoration:none;' onclick="dirsearchlogshowfunc()">
+              <img src="{{ url_for('static', filename='ico/log.ico') }}">
+            </a>
+            <a href="/dirsearchtargeetdown/" style='text-decoration:none;' onclick="dirsearchlogshowfunc()">
+              <img src="{{ url_for('static', filename='ico/dirsearchfiletargetfile.ico') }}">
+            </a>
+          </td>
+
+          <td>
+            <strong>漏洞扫描</strong>
+            <a href="/vulmapscanreportdown/" style='text-decoration:none;'>
+              <img src="{{ url_for('static', filename='ico/download2.ico') }}">
+            </a>
+            <a href="/vulmapscanreportfilterdown/" style='text-decoration:none;'>
+              <img src="{{ url_for('static', filename='ico/vulmapdown.ico') }}">
+            </a>
+          </td>
+        </tr>
+
+
+
+        <tr>
+
+          <td>
+            <strong>文件操作</strong>&nbsp;&nbsp;&nbsp;
+            <!--
+            <input type="button" class="hover-color" name="commit" value="单个表格转换" onclick="baseconfilefunc()">-->
+            <input type="button" class="hover-color" name="commit" value="表格批量转换" onclick="baseconfilefunc1()">
+
+            <input type="button" class="hover-color" name="commit" value="文件删除" onclick="cleardirvulmaptargetfunc()">
+            <!--
+            <input type="button" class="hover-color" name="commit" value="文件追加"
+              onclick="copydirsearchtmpinterfacefunc()">-->
+              <input type="button" class="hover-color" name="commit" value="白名单检索(配置文件)" onclick="dirscanbyconfigwhitefunc()">
+              <select name="fileqingxiname">
+                <option value="1">保留IP</option>
+                <option value="2">保留IP和域名</option>
+              </select>
+            <input type="button" class="hover-color" name="commit" value="文件清洗" onclick="filedeweightingfunc()">
+          </td>
+          <td>
+            <strong>漏洞展示</strong>&nbsp;&nbsp;
+            <input type="button" class="hover-color" name="commit" value="显示漏洞" onclick="vulndisplayfunc()">
+            <input type="button" class="hover-color" name="commit" value="隐藏漏洞" onclick="vulndisplaystopfunc()">
+            <input type="button" class="hover-color" name="commit" value="显示数量" onclick="showvulmapcountfunc()">
+            <input type="button" class="hover-color" name="commit" value="隐藏数量" onclick="stopvulmapcountfunc()">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>数据查看</strong>&nbsp;&nbsp;
+            <input type="button" class="hover-color" name="commit" value="黑名单查询" onclick="blacklistshowfunc()">
+            <input type="button" class="hover-color" name="commit" value="白名单查询" onclick="Whitelistshowfunc()">
+            <input type="button" class="hover-color" name="commit" value="处理前数据" onclick="showoriginaldatafunc()">
+            <input type="button" class="hover-color" name="commit" value="处理后数据" onclick="showoriginaldatafunc1()">
+          </td>
+          <td>
+            <strong>漏洞过滤</strong>&nbsp;&nbsp;&nbsp;
+            <select name="vulmapvalue">
+              <option value="名称">all</option>
+              <option value="activemq">activemq</option>
+              <option value="flink">flink</option>
+              <option value="shiro">shiro</option>
+              <option value="solr">solr</option>
+              <option value="struts2">struts2</option>
+              <option value="tomcat">tomcat</option>
+              <option value="unomi">unomi</option>
+              <option value="drupal">drupal</option>
+              <option value="elasticsearch">elasticsearch</option>
+              <option value="fastjson">fastjson</option>
+              <option value="jenkins">jenkins</option>
+              <option value="laravel">laravel</option>
+              <option value="nexus">nexus</option>
+              <option value="weblogic">weblogic</option>
+              <option value="jboss">jboss</option>
+              <option value="spring">spring</option>
+              <option value="thinkphp">thinkphp</option>
+              <option value="druid">druid</option>
+              <option value="exchange">exchange</option>
+              <option value="nodejs">nodejs</option>
+              <option value="saltstack">saltstack</option>
+              <option value="vmware">vmware</option>
+              <option value="bigip">bigip</option>
+              <option value="ofbiz">ofbiz</option>
+              <option value="coremail">coremail</option>
+              <option value="ecology">ecology</option>
+              <option value="eyou">eyou</option>
+              <option value="qianxin">qianxin</option>
+              <option value="ruijie">ruijie</option>
+            </select>
+            <select name="vulmapvalue1">
+              <option value="1">前1行</option>
+              <option value="2">前2行</option>
+              <option value="3">前3行</option>
+              <option value="4">前4行</option>
+              <option value="5">前5行</option>
+              <option value="6">前6行</option>
+              <option value="7">前7行</option>
+              <option value="8">前8行</option>
+              <option value="9">前9行</option>
+              <option value="10">前10行</option>
+            </select>
+            <input type="button" class="hover-color" name="commit" value="确定" onclick="filtervulmapfunc()">
+          </td>
+        </tr>
+        <tr>
+          <td>
+
+
+            <strong>文件过滤</strong>&nbsp;&nbsp;
+            <input type="button" class="hover-color" name="commit" value="原始数据同步" onclick="dirsearchcopyfilefunc()">
+            <input type="button" class="hover-color" name="commit" value="黑名单同步" onclick="flushdirsearchdatafunc()">
+            <input type="button" class="hover-color" name="commit" value="白名单同步" onclick="flushdirsearchdatabywhitefunc()">
+            <br><br>
+            <strong>阈值过滤</strong>&nbsp;&nbsp;
+            <select name="thresholdname">
+              <option value="4">过滤出现超过4次的网址</option>
+              <option value="5">过滤出现超过5次的网址</option>
+              <option value="6">过滤出现超过6次的网址</option>
+              <option value="7">过滤出现超过7次的网址</option>
+              <option value="8">过滤出现超过8次的网址</option>
+              <option value="9">过滤出现超过9次的网址</option>
+              <option value="10">过滤出现超过10次的网址</option>
+            </select>
+            <input type="button" class="hover-color" name="commit" value="过滤" onclick="thresholdvaluefunc()">
+            <br><br>
+            <strong>状态过滤</strong>&nbsp;&nbsp;
+            <select name="statuscodename">
+              <option value="200">状态码200</option>
+              <option value="403">状态码403</option>
+              <option value="404">状态码404</option>
+              <option value="500">状态码500</option>
+              <option value="503">状态码503</option>
+            </select>
+            <input type="button" class="hover-color" name="commit" value="过滤" onclick="filterstatuscodefunc()">
+          </td>
+
+          <td>
+            <strong>漏洞扫描</strong>&nbsp;&nbsp;
+            <input type="button" class="hover-color" name="commit" value="开始扫描" onclick="startvulmapscanfunc()"
+              id="button4" disabled=true>
+            <input type="button" class="hover-color" name="commit" value="关闭扫描" onclick="killvulmapscanprocessfunc()"
+              id="button1" disabled=true>
+            <input type="button" class="hover-color" name="commit" value="清除数据" onclick="vulmapclearcachefunc()"
+              id="button2" disabled=true><br><br>
+            <strong>Nuclei扫描</strong>
+            <input type="button" class="hover-color" name="commit" value="调用Nuclei" onclick="startnucleiserverfunc()">
+            <input type="button" class="hover-color" name="commit" value="结果预览" onclick="nucleijumpfunc()">
+            <input type="button" class="hover-color" name="commit" value="关闭扫描"
+              onclick="stopnucleiprocessunc()"><br><br>
+            <strong>批量添加</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" class="hover-color" name="commit" value="扫描前黑名单" onclick="scanbeforebatchinsert()">
+            <input type="button" class="hover-color" name="commit" value="扫描后黑名单" onclick="scanafterbatchinsert()">
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <strong>日志显示</strong>&nbsp;&nbsp;
+            <select id="logoperid1" onclick="logselectvaluefunc()">
+              <option>--请选择--</option>
+              <option></option>
+            </select>
+          </td>
+          <td>
+            <strong>域名检测</strong>
+            <input type="text" name="pingvaluename" required="required" placeholder="请输入网址或ip">
+            <input type="button" class="hover-color" name="commit" value="查询" onclick="selectpingresultfunc()">
+            <input type="button" class="hover-color" name="commit" value="返回" onclick="cancelpingresultfunc()">
+            <br>
+            <span id="pingid"></span>&nbsp;&nbsp;
+            <span id="pingid1"></span>&nbsp;&nbsp;
+            <span id="pingid2"></span>
+            <!--
+                <strong>httpx扫描进度</strong>&nbsp;&nbsp;
+               {{data16}}/{{data17}}
+                -->
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <strong>目录扫描</strong>&nbsp;&nbsp;
+            <input type="button" class="hover-color" name="commit" value="开始扫描" onclick="dirsearchscanfunc()"
+              id="button6" disabled=true>
+            <input type="button" class="hover-color" name="commit" value="关闭扫描" onclick="dirsearchkillfunc()"
+              id="button5" disabled=true>
+            <input type="button" class="hover-color" name="commit" value="清除数据" onclick="dirsearchclearfunc()"
+              id="button3" disabled=true>
+          </td>
+          <td>
+            <strong>fofa模块</strong>
+            <input type="button" class="hover-color" name="commit" value="文本转换" onclick="textrenamefunc()">
+            <input type="button" class="hover-color" name="commit" value="文件去重" onclick="uniqfofabatchfunc()">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <form method="post" action="/dirsearchfileupload/" enctype="multipart/form-data">
+              <input type="file" name="file" required="required" placeholder="文件上传" accept=".txt"
+                onchange="upFile(event)">
+              <input type="submit" class="hover-color" name="commit" value="上传" onclick="startvulnfunc()">{{datainfo}}
+            </form>
+
+            <div style="display:none;" id="divvulmapid">
+              <h4>漏洞数量显示</h4>
+              <span id="span1"></span>&nbsp;&nbsp;
+              <span id="span2"></span>&nbsp;&nbsp;
+              <span id="span3"></span>&nbsp;&nbsp;
+              <span id="span4"></span><br>
+              <span id="span5"></span>&nbsp;&nbsp;
+              <span id="span6"></span>&nbsp;&nbsp;
+              <span id="span7"></span>&nbsp;&nbsp;
+              <span id="span8"></span><br>
+              <span id="span9"></span>&nbsp;&nbsp;
+              <span id="span10"></span>&nbsp;&nbsp;
+              <span id="span11"></span>&nbsp;&nbsp;
+              <span id="span12"></span><br>
+              <span id="span13"></span>&nbsp;&nbsp;
+              <span id="span14"></span>&nbsp;&nbsp;
+              <span id="span15"></span>&nbsp;&nbsp;
+              <span id="span16"></span><br>
+              <span id="span17"></span>&nbsp;&nbsp;
+              <span id="span18"></span>&nbsp;&nbsp;
+              <span id="span19"></span>&nbsp;&nbsp;
+              <span id="span20"></span><br>
+              <span id="span21"></span>&nbsp;&nbsp;
+              <span id="span22"></span>&nbsp;&nbsp;
+              <span id="span23"></span>&nbsp;&nbsp;
+              <span id="span24"></span><br>
+              <span id="span25"></span>&nbsp;&nbsp;
+              <span id="span26"></span>&nbsp;&nbsp;
+              <span id="span27"></span>&nbsp;&nbsp;
+              <span id="span28"></span><br>
+              <span id="span29"></span><br>
+            </div>
+            <div style="display:none;" id="divvulmapid11">
+              <h4>漏洞详情显示</h4>
+              <span id="span30"></span>
+            </div>
+
+          </td>
+          <td>
+            <img src="{{ url_for('static', filename='ico/file.jpg') }}" width="450" height="100">
+          </td>
+        </tr>
+
+        </td>
+
+        </tr>
+
+
+
+
+        {% for g in data6 %}
+        <tr>
+          <td>{{g[0]}}</td>
+          <td><a href="#" style='text-decoration:none;' onclick="deletedirfunc('{{ g[1] }}')">删除</a></td>
+        </tr>
+        {% endfor %}
+
+        <tr>
+          <td>
+            <span>{{data7}}</span><br>
+            <span>{{data12}}</span><br>
+            <span>{{data13}}</span>
+            <font color="red">《{{data14}}》</font>
+            <br>
+            <span>{{data18}}</span>
+          </td>
+
+          <td>
+            目录扫描服务运行状态:&nbsp;&nbsp;
+            <font color="red">
+              {{data5}}
+            </font>
+            <br>
+
+            文件清洗服务运行状态:&nbsp;&nbsp;
+            <font color="red">
+              {{data20}}
+            </font>
+            <br>
+
+            Nuclei服务运行状态:&nbsp;&nbsp;
+            <font color="red">
+              {{data19}}
+            </font>
+            <br>
+            漏洞扫描服务运行状态:&nbsp;&nbsp;
+            <font color="red">
+              {{data11}}
+            </font>
+            <br>
+            httpx服务运行状态:&nbsp;&nbsp;
+            <font color="red">
+              {{data15}}
+            </font><br>
+
+            httpx扫描进度:&nbsp;&nbsp;
+            <font color="green">
+              {{data16}}/{{data17}}
+            </font>
+          </td>
+        </tr>
+
+        <tr id="aaa">
+          <td>
+            目录列表
+            <button onclick="selectAll()">全选</button>
+            <button onclick="reverseSelection()">反选</button>
+          </td>
+          <td>操作选项</td>
+        </tr>
+
+        <tbody id="adminTbody">
+          {% for i in data %}
+          <tr>
+            <td>
+              <input type="checkbox" name="checkbox" value="{{i}}">&nbsp;&nbsp;
+              {{i}}
+            </td>
+
+
+
+            <td>
+              <a href="####" class="hover-color" style='text-decoration:none;'
+                onclick="primitivereportfunc('{{i}}')">访问原始网址</a>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <a href="####" class="hover-color" style='text-decoration:none;'
+                onclick="generatereportfunc('{{i}}')">访问漏洞网址</a>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <a href="####" class="hover-color" style='text-decoration:none;'
+                onclick="beforeblacklistaddition('{{i}}')">扫描前黑名单添加</a>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <a href="####" class="hover-color" style='text-decoration:none;'
+                onclick="blacklistaddition('{{i}}')">扫描后黑名单添加</a>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <a href="####" class="hover-color" style='text-decoration:none;'
+                onclick="primitivereportfunc1('{{i}}')">原始数据备案信息</a>
+            </td>
+
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+
+      <table class="table table-bordered" style="display:none;" id="tab1">
+
+        {% for j in data09 %}
+
+        <tr>
+          <td>
+            {{j}}
+          </td>
+
+        </tr>
+
+        {% endfor %}
+      </table>
+
+
+
+    </div>
+
+
+    <div id="barcon" class="barcon">
+      <div id="barcon1" class="barcon1"></div>
+      <div id="barcon2" class="barcon2">
+        <ul>
+          <li><a href="###" id="firstPage">首页</a></li>
+          <li><a href="###" id="prePage">上一页</a></li>
+          <li><a href="###" id="nextPage">下一页</a></li>
+          <li><a href="###" id="lastPage">尾页</a></li>
+          <li><select id="jumpWhere">
+            </select></li>
+          <li><a href="###" id="jumpPage" οnclick="jumpPage()">跳转</a></li>
+        </ul>
+      </div>
+    </div>
+
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

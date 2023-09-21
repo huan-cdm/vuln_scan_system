@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}应用状态{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>应用状态</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+  <meta name="robots" content="noindex,follow" />
+
+ 
+
+  <script>
+    //ajax异步关闭Elasticsearch
+  function stopesfunc() {
+    var oper = "stopesservice";
+    $.ajax({
+            url: '/operservice/',
+            method: 'POST',
+            data: {
+                  oper: oper
+                  },
+            success: function (res) { 
+                console.log(res)
+                console.log('Elasticsearch服务关闭成功')
+            },
+            error: function () {
+                alert('Elasticsearch服务关闭出错')
+            },
+            complete: function () {
+                alert('Elasticsearch服务关闭完成')
+            }
+        })
+      $.getJSON("/essystemstatusinist/",
+		  function(info){
+			  document.getElementById("sp3").innerHTML = info.es_status_1;
+		})   
+  }
+      </script>
+
+
+<script>
+  //ajax异步重启Elasticsearch
+function restartesfunc() {
+  var oper = "restartesservice";
+  $.ajax({
+          url: '/operservice/',
+          method: 'POST',
+          data: {
+                oper: oper
+                },
+          success: function (res) { 
+              console.log(res)
+              console.log('Elasticsearch服务重启成功')
+          },
+          error: function () {
+              alert('Elasticsearch服务重启出错')
+          },
+          complete: function () {
+              alert('Elasticsearch服务重启完成')
+          }
+      })
+      $.getJSON("/essystemstatusinist/",
+		function(info){
+			document.getElementById("sp3").innerHTML = info.es_status_1;
+		})     
+}
+    </script>
+
+
+<script>
+  //ajax异步重启mysql
+function restartmysqlfunc() {
+  var oper = "restartmysqlservice";
+  $.ajax({
+          url: '/operservice/',
+          method: 'POST',
+          data: {
+                oper: oper
+                },
+          success: function (res) { 
+              console.log(res)
+              console.log('MySQL服务重启成功')
+          },
+          error: function () {
+              alert('MySQL服务重启出错')
+          },
+          complete: function () {
+              alert('MySQL服务重启完成')
+          }
+      })
+      $.getJSON("/mysqlsystemstatusinist/",
+		  function(info){
+			  document.getElementById("sp2").innerHTML = info.mysql_status_1;
+		})   
+}
+    </script>
+
+
+<script>
+  //ajax异步关闭mysql
+function stopmysqlfunc() {
+  var oper = "stopmysqlservice";
+  $.ajax({
+          url: '/operservice/',
+          method: 'POST',
+          data: {
+                oper: oper
+                },
+          success: function (res) { 
+              console.log(res)
+              console.log('MySQL服务关闭成功')
+          },
+          error: function () {
+              alert('MySQL服务关闭出错')
+          },
+          complete: function () {
+              alert('MySQL服务关闭完成')
+          }
+      })
+      $.getJSON("/mysqlsystemstatusinist/",
+		  function(info){
+			  document.getElementById("sp2").innerHTML = info.mysql_status_1;
+		})   
+}
+</script>
+
+
+
+<script>
+//ajax异步关闭flask
+function stopflaskfunc() {
+  var oper = "stopflaskservice";
+  $.ajax({
+          url: '/operservice/',
+          method: 'POST',
+          data: {
+                oper: oper
+                },
+          success: function (res) { 
+              console.log(res)
+              console.log('Flask服务关闭完成')
+          },
+          error: function () {
+              alert('Flask服务关闭出错')
+          },
+          complete: function () {
+              alert('Flask服务关闭完成')
+          }
+      })
+    $.getJSON("/flasksystemstatusinist/",
+		function(info){
+			document.getElementById("sp1").innerHTML = info.flask_status_1;
+		})       
+     
+}
+</script>
+
+
+<script>
+  //ajax异步显示漏洞标题页面数据
+function startindexpagefunc() {
+  $.ajax({
+          url: '/showindexpagedata/',
+          method: 'GET',
+          success: function (res) { 
+              console.log(res)
+              console.log('漏洞标题页面数据已开启')
+          },
+          error: function () {
+              alert('漏洞标题页面数据已出错')
+          },
+          complete: function () {
+              alert('漏洞标题页面数据已开启')
+          }
+      })
+      $.getJSON("/indexsystemstatusinist/",
+		function(info){
+			document.getElementById("sp4").innerHTML = info.indexstatus_1;
+		})     
+}
+</script>
+
+
+<script>
+  //ajax异步关闭漏洞标题页面数据
+function stopindexpagefunc() {
+  $.ajax({
+          url: '/hideindexpagedata/',
+          method: 'GET',
+          success: function (res) { 
+              console.log(res)
+              console.log('漏洞标题页面数据已关闭')
+          },
+          error: function () {
+              alert('漏洞标题页面数据已出错')
+          },
+          complete: function () {
+              alert('漏洞标题页面数据已关闭')
+          }
+      })
+      $.getJSON("/indexsystemstatusinist/",
+		function(info){
+			document.getElementById("sp4").innerHTML = info.indexstatus_1;
+		})     
+}
+</script>
+
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+    
+        <h1 style="text-align:left"><strong>刷新页面&nbsp;&nbsp;</strong>
+          <a href="/systemstatus/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+          </a></h1>
+      <table class="table table-bordered">
+        <tr>
+          <th>服务运行状态</th>
+          <th>操作</th>
+        </tr>
+
+        <tr>
+          <td>Flask服务{{data1}}&nbsp;&nbsp;
+            <span id="sp1"></span>
+          </td>
+          <td> 
+            <input type="button" name="commit" value="开启" onclick="">
+            <input type="button" name="commit" value="关闭" onclick="stopflaskfunc()">
+          </td>
+          </td>
+        </tr>
+
+
+        <tr>
+          <td>MySQL服务{{data2}}&nbsp;&nbsp;
+            <span id="sp2"></span>
+          </td>
+          <td>
+            <input type="button" name="commit" value="开启" onclick="restartmysqlfunc()">
+            <input type="button" name="commit" value="关闭" onclick="stopmysqlfunc()">
+          </td>
+        </tr>
+
+        <tr>
+          <td>Elasticsearch服务{{data3}}&nbsp;&nbsp;
+            <span id="sp3"></span>
+          </td>
+          <td> 
+            <input type="button" name="commit" value="开启" onclick="restartesfunc()">
+            <input type="button" name="commit" value="关闭" onclick="stopesfunc()">
+          </td>
+        </tr>
+        <tr>
+          <td>漏洞标题页面数据{{data4}}&nbsp;&nbsp;
+            <span id="sp4"></span>
+          </td>
+          <td> 
+            <input type="button" name="commit" value="开启" onclick="startindexpagefunc()">
+            <input type="button" name="commit" value="关闭" onclick="stopindexpagefunc()">
+          </td>
+        </tr>
+      </table>
+
+    </div>
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

@@ -1,0 +1,208 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Flask{% endblock %}
+{% block navbar %}
+
+<script type="text/javascript"  src="{{ url_for( 'static',filename='js/jquery-3.3.1.min.js') }}"></script>
+<link type="text/css" href="{{ url_for('static', filename='css/style2.css') }}" rel="stylesheet">
+<link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+<script>
+  function myFunction() {
+    alert("请联系管理员开启!");
+  }
+</script>
+
+<script>
+//清空session
+	function clearsession(value) {
+		$.ajax({
+                url: '/clearsession/',
+                method: 'GET',
+                success: function (res) { 
+                    console.log(res)
+                    console.log('系统退出成功')
+                },
+                error: function () {
+                    alert('系统退出出错')
+                },
+                complete: function () {
+                    alert('系统退出完成')
+                }
+            })
+    }
+	</script>
+
+<script>
+  window.onload=function(){
+  //定时器每秒调用一次fnDate()
+  setInterval(function(){
+  fnDate();
+  },1000);
+  }
+  
+  //js 获取当前时间
+  function fnDate(){
+  var oDiv=document.getElementById("times");
+  var date=new Date();
+  var year=date.getFullYear();//当前年份
+  var month=date.getMonth();//当前月份
+  var data=date.getDate();//天
+  var hours=date.getHours();//小时
+  var minute=date.getMinutes();//分
+  var second=date.getSeconds();//秒
+  var time=year+"-"+fnW((month+1))+"-"+fnW(data)+" "+fnW(hours)+":"+fnW(minute)+":"+fnW(second);
+  oDiv.innerHTML=time;
+  }
+  //补位 当某个字段不是两位数时补0
+  function fnW(str){
+  var num;
+  str>10?num=str:num="0"+str;
+  return num;
+  } 
+  </script>
+ 
+ <script>
+  //ajax异步显示漏洞数量
+function showcpufunc() {
+ 
+  $.getJSON("/cpushowinterface/",
+		function(info){
+			document.getElementById("span1").innerHTML = info.cpurate;
+			
+		})           
+}
+</script>
+
+
+
+<div class="navbar navbar-inverse" role="navigation" style="text-align:center" >
+  
+  <div class="container" style="text-align:center">
+   
+    <h4 align="left">欢迎访问信息收集平台！V1.1</h4>
+    <h4 align="left">author：huan666</h4>
+    <h4 align="left" id="times"></h4>
+    <h4 align="left">
+      <a href="###" style='text-decoration:none;' onclick="showcpufunc()">
+        <img src="{{ url_for('static', filename='ico/cpu.ico') }}">
+        </a>
+        <span id="span1"></span>
+      </h4>
+     
+    <h6 align="left">
+      <iframe allowtransparency="true" frameborder="0" width="385" height="79" scrolling="no" src="//tianqi.2345.com/plugin/widget/index.htm?s=1&z=1&t=0&v=0&d=3&bd=0&k=&f=&ltf=009944&htf=cc0000&q=1&e=1&a=1&c=54511&w=385&h=96&align=center"></iframe>
+    </h6>
+
+    <div class="navbar-header" style="text-align:center" background-color: #ffffff;>
+      
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/bookmarks/" style="text-align: right;" target="_blank">安全导航</a>
+    
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">信息收集
+          <ul style="text-align: left;">
+            <li> <a href="/platform/" style='text-decoration:none;'>资产探测</a></li>
+            <li><a  href="/domainemail/" style='text-decoration:none;'>邮箱收集</a></li>
+          </ul>
+        </li>
+      </ul>
+
+
+
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">域名相关
+          <ul style="text-align: left;">
+            <li><a  href="/ipcheckdomain/" style='text-decoration:none;'>IP反查域名</a></li>
+            <li><a  href="/dns/" style='text-decoration:none;'>DNS查询</a></li>
+          </ul>
+        </li>
+      </ul>
+
+
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">搜索引擎
+          <ul style="text-align: left;">
+            <li><a  href="/subdomainpage/" style='text-decoration:none;'>FOFA查询</a></li>
+            <li><a  href="/portscan/" style='text-decoration:none;'>Shodan查询</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">指纹字典
+          <ul style="text-align: left;">
+            <li><a  href="/dicgenerate/" style='text-decoration:none;'>字典生成</a></li>
+            <li><a href="/finger/" style='text-decoration:none;'>指纹识别</a></li>
+            <li><a href="/ipsurvive/" style='text-decoration:none;'>存活主机探测</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">数据管理
+          <ul style="text-align: left;">
+            <li> <a href="/index/" style='text-decoration:none;'>漏洞管理</a></li>
+            <li> <a href="/userlist/" style='text-decoration:none;'>用户管理</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">漏洞扫描
+          <ul style="text-align: left;">
+            <li> <a  href="/dirsearchscan/" style='text-decoration:none;'>漏洞扫描</a></li>
+            <li><a   href="/pagelink/" style='text-decoration:none;'>JS文件扫描</a></li>
+          </ul>
+        </li>
+      </ul>
+      
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">端口扫描
+          <ul style="text-align: left;">
+            <li> <a href="/nmapportscan/" style='text-decoration:none;'>nmap端口扫描</a></li>
+            <li><a href="/fscanner/" style='text-decoration:none;'>fscan端口扫描</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">子域名扫描
+          <ul style="text-align: left;">
+            <li><a href="/fofasubdomain/" style='text-decoration:none;'>子域名探测</a></li>
+            <li><a href="/subdomainsbrutescan/" style='text-decoration:none;'>子域名爆破</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul id="menu" class="navbar-brand">
+        <li style="text-align: right;">系统管理
+          <ul style="text-align: left;">
+            <li><a  href="/accessrecord/" style='text-decoration:none;'>访问记录</a></li>
+            <li> <a href="/managelog/" style='text-decoration:none;'>日志管理</a> </li>
+            <li> <a href="/systemstatus/" style='text-decoration:none;'>服务管理</a> </li>
+          </ul>
+        </li>
+      </ul>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+      <a class="navbar-brand" href="#" style="text-align: right;" onclick="clearsession()">系统注销</a> 
+      <br><br><br><br><br><br><br><br><br>
+    </div>
+
+    
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% block page_content %}{% endblock %}
+</div>
+{% endblock %}

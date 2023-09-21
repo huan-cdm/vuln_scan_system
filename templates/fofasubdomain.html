@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}子域名搜索{% endblock %}
+
+{% block page_content %}
+<!DOCTYPE html>
+
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>子域名搜索</title>
+  <link type="text/css" href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style1.css') }}" rel="stylesheet">
+  <link type="text/css" href="{{ url_for('static', filename='css/style3.css') }}" rel="stylesheet">
+  <meta name="robots" content="noindex,follow" />
+
+  <script>
+
+    $(function () {
+
+      goPage(1, 10);
+      var tempOption = "";
+      for (var i = 1; i <= totalPage; i++) {
+        tempOption += '<option value=' + i + '>' + i + '</option>'
+      }
+      $("#jumpWhere").html(tempOption);
+    })
+
+
+    var pageSize = 0;//每页显示行数
+    var currentPage_ = 1;//当前页全局变量，用于跳转时判断是否在相同页，在就不跳，否则跳转。
+    var totalPage;//总页数
+    function goPage(pno, psize) {
+      var itable = document.getElementById("adminTbody");
+      var num = itable.rows.length;//表格所有行数(所有记录数)
+
+      pageSize = psize;//每页显示行数
+      //总共分几页 
+      if (num / pageSize > parseInt(num / pageSize)) {
+        totalPage = parseInt(num / pageSize) + 1;
+      } else {
+        totalPage = parseInt(num / pageSize);
+      }
+      var currentPage = pno;//当前页数
+      currentPage_ = currentPage;
+      var startRow = (currentPage - 1) * pageSize + 1;
+      var endRow = currentPage * pageSize;
+      endRow = (endRow > num) ? num : endRow;
+      
+      $("#adminTbody tr").hide();
+      for (var i = startRow - 1; i < endRow; i++) {
+        $("#adminTbody tr").eq(i).show();
+      }
+      var tempStr = "共" + num + "条记录 分" + totalPage + "页 当前第" + currentPage + "页";
+      document.getElementById("barcon1").innerHTML = tempStr;
+
+      if (currentPage > 1) {
+        $("#firstPage").on("click", function () {
+          goPage(1, psize);
+        }).removeClass("ban");
+        $("#prePage").on("click", function () {
+          goPage(currentPage - 1, psize);
+        }).removeClass("ban");
+      } else {
+        $("#firstPage").off("click").addClass("ban");
+        $("#prePage").off("click").addClass("ban");
+      }
+
+      if (currentPage < totalPage) {
+        $("#nextPage").on("click", function () {
+          goPage(currentPage + 1, psize);
+        }).removeClass("ban")
+        $("#lastPage").on("click", function () {
+          goPage(totalPage, psize);
+        }).removeClass("ban")
+      } else {
+        $("#nextPage").off("click").addClass("ban");
+        $("#lastPage").off("click").addClass("ban");
+      }
+
+      $("#jumpWhere").val(currentPage);
+    }
+
+
+    function jumpPage() {
+      var num = parseInt($("#jumpWhere").val());
+      if (num != currentPage_) {
+        goPage(num, pageSize);
+      }
+    }
+
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="login">
+        <h1 style="text-align:left">
+          <a href="/fofasubdomain/" style='text-decoration:none;'>
+          <img src="{{ url_for('static', filename='ico/shuaxin.ico') }}">
+          
+          </a>
+
+          <a style='text-decoration:none;' href="/fofasubdomaindownload/">
+            <img src="{{ url_for('static', filename='ico/download2.ico') }}">
+          </a>
+          
+        </h1>
+      
+      <form method="post" action="/fofasubdomainfunc/">
+        <p><strong>域名:</strong><input type="text" name="domain" value="{{data1}}"
+            required="required" placeholder="domain=“baidu.com”">
+
+            <strong>查询数量:</strong><select name="num">
+              <option value="1000">1000条</option>
+              <option value="2000">2000条</option>
+              <option value="3000">3000条</option>
+              <option value="4000">4000条</option>
+              <option value="5000">5000条</option>
+              <option value="10000">10000条</option>
+            </select>
+            <input type="submit" name="commit" value="提交"></p>
+      </form>
+
+      
+
+      <table class="table table-bordered">
+        <!--
+        <tr>
+            <th style=" text-align:center;">子域名搜索详情</th>
+            <td><p>{{data}}</p></td>
+        </tr>
+            -->
+
+        <tbody id="adminTbody">
+        {% for bbb in data %}
+        <tr>
+          <td><strong>{{bbb}}</strong></td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+      </table>
+
+    </div>
+
+    <div id="barcon" class="barcon">
+      <div id="barcon1" class="barcon1"></div>
+      <div id="barcon2" class="barcon2">
+        <ul>
+          <li><a href="###" id="firstPage">首页</a></li>
+          <li><a href="###" id="prePage">上一页</a></li>
+          <li><a href="###" id="nextPage">下一页</a></li>
+          <li><a href="###" id="lastPage">尾页</a></li>
+          <li><select id="jumpWhere">
+            </select></li>
+          <li><a href="###" id="jumpPage" οnclick="jumpPage()">跳转</a></li>
+        </ul>
+      </div>
+    </div>
+
+
+    <div class="login-help">
+    </div>
+  </div>
+  <div style="text-align:center;clear:both">
+  </div>
+</body>
+
+</html>
+{% endblock %}

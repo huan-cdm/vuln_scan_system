@@ -1,0 +1,22 @@
+version: "2"
+services:
+  web:
+    build: .
+    ports:
+      - "8001:80"
+    volumes:
+      - ./docker/data/redis/:/var/lib/redis/
+      - ./:/home/docker/Github-Monitor/
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:5.7
+    restart: always
+    command: --max_allowed_packet=1073741824 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --init-connect='SET NAMES utf8mb4;'
+    expose:
+      - 3306
+    volumes:
+      - ./docker/data/mysql/:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: vipkid@2018
+      MYSQL_DATABASE: github
