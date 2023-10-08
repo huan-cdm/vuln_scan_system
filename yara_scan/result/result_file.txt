@@ -1,5 +1,0 @@
-s_rule ./target_file/test/s.exe
-
-webshell_rule ./target_file/JspSpy.jsp
-webshell_rule ./target_file/best_php_shell.php
-
