@@ -10,7 +10,7 @@ from config import fofaemail
 
 #批量检索只开通通过IP查询域名，改为fofa语法格式
 first_arg = sys.argv[1]
-fofa_first_argv= 'ip="' + first_arg + '"'
+fofa_first_argv= '[+]  ip=' + first_arg + ''
 fofa_first_argv_utf8 = fofa_first_argv.encode('utf-8')
 fofa_first_argv_base64=base64.b64encode(fofa_first_argv_utf8)
 fofa_argv_str=str(fofa_first_argv_base64,'utf-8')
