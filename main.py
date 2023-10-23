@@ -2494,9 +2494,11 @@ def dirsearchscan():
         #目录扫描同步后的数量
         dirsearch_sync_value = os.popen('bash /TIP/flask_cnvd/shellscript/num_count.sh dirsearchsyncresult').read()
         dirsearch_sync_value_result = "目录数量（过滤后）："+str(dirsearch_sync_value)
+        mark = httpx_rows_result+ "/" +num_2
+
         return render_template('dirsearchscan.html',data=dirsearch_list,data5=dir_status_list,data6=dirdata,data7=num_1,
         data09=dir_list_status_code,data11=vulmap_status_list,data12=vuln_num_int_1,data13=dirsearch_count,data14=dirsearch_data_judgment,
-        data15=httpx_status_list,data16=httpx_rows_result,data17=num_2,data18=dirsearch_sync_value_result,data19=nuclei_status_list,
+        data15=httpx_status_list,data16=mark,data18=dirsearch_sync_value_result,data19=nuclei_status_list,
         data20=file_clean_status)
     else:
         return render_template('login.html')
@@ -3129,7 +3131,7 @@ def textrenameinterface():
 @app.route("/dirsearchfileupload/",methods=['post'])
 def dirsearchfileupload():
     user = session.get('username')
-    result = "上传成功"
+    result = "上传结果："+" "+"成功"
     if str(user) == usernameconfig:
         app.logger.warning('目录扫描文件上传')
         try:
@@ -3142,11 +3144,11 @@ def dirsearchfileupload():
         except:
             pass
         #扫描状态，回显给前端。
-        dir_status_list = os.popen('bash /TIP/flask_cnvd/shellscript/scannerstatus.sh dirsearchstatus').read()
+        dir_status_list = "刷新查看服务状态"
         #vulmap漏洞扫描状态，回显给前端
-        vulmap_status_list = os.popen('bash /TIP/flask_cnvd/shellscript/scannerstatus.sh vulmapscanstatus').read()
+        vulmap_status_list = "刷新查看服务状态"
         #httpx运行状态
-        httpx_status_list = os.popen('bash /TIP/flask_cnvd/shellscript/scannerstatus.sh httpxscanstatus').read()
+        httpx_status_list = "刷新查看服务状态"
 
         #回显给前端的目标文件行数
         num = os.popen('bash /TIP/flask_cnvd/shellscript/killscan.sh dirsearchtargetnum').read()
@@ -3186,8 +3188,15 @@ def dirsearchfileupload():
         #目录扫描同步后的数量
         dirsearch_sync_value = os.popen('bash /TIP/flask_cnvd/shellscript/num_count.sh dirsearchsyncresult').read()
         dirsearch_sync_value_result = "目录数量（过滤后）："+str(dirsearch_sync_value)
+
+        #文件上传大小
+        dirsearch_scan_file_size_1 = os.popen('bash /TIP/flask_cnvd/shellscript/num_count.sh dirsearchscan_file_size').read()
+        dirsearch_scan_file_size = "文件大小："+"  "+dirsearch_scan_file_size_1
+    
+
         return render_template('dirsearchscan.html',datainfo = result,data5=dir_status_list,data7=num_1,data11=vulmap_status_list,data12=vuln_num_int_1,
-        data13=dirsearch_count,data14=dirsearch_data_judgment,data15=httpx_status_list,data18=dirsearch_sync_value_result)
+        data13=dirsearch_count,data14=dirsearch_data_judgment,data15=httpx_status_list,data18=dirsearch_sync_value_result,data21=dirsearch_scan_file_size,
+        data20=httpx_status_list,data19=httpx_status_list,data16=httpx_status_list)
     else:
         return render_template('login.html')
 

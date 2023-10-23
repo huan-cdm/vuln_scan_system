@@ -480,11 +480,7 @@
             <span id="pingid"></span>&nbsp;&nbsp;
             <span id="pingid1"></span>&nbsp;&nbsp;
             <span id="pingid2"></span>
-            <!--
-                <strong>httpx扫描进度</strong>&nbsp;&nbsp;
-               {{data16}}/{{data17}}
-                -->
-
+          
           </td>
         </tr>
 
@@ -509,7 +505,10 @@
             <form method="post" action="/dirsearchfileupload/" enctype="multipart/form-data">
               <input type="file" name="file" required="required" placeholder="文件上传" accept=".txt"
                 onchange="upFile(event)">
-              <input type="submit" class="hover-color" name="commit" value="上传" onclick="startvulnfunc()">{{datainfo}}
+              <input type="submit" class="hover-color" name="commit" value="上传" onclick="startvulnfunc()">
+              <br><br>
+              {{datainfo}}<br>
+              {{data21}}
             </form>
 
             <div style="display:none;" id="divvulmapid">
@@ -609,7 +608,7 @@
 
             httpx扫描进度:&nbsp;&nbsp;
             <font color="green">
-              {{data16}}/{{data17}}
+              {{data16}}
             </font>
           </td>
         </tr>

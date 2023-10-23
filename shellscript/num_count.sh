@@ -205,4 +205,11 @@ case "${1}" in
     dirsearchsyncresult_value=`cat /TIP/flask_cnvd/file_txt/dirsearchfileresult.txt  | wc -l`
     echo "${dirsearchsyncresult_value}"
     ;;
+
+    #目录扫描文件上传文件大小
+    dirsearchscan_file_size)
+    string=`du -sh /TIP/flask_cnvd/dirsearch/dirsearchfilepath/*.zip`
+    dirsearchscan_file_size_value=$(echo "$string" | awk '{match($0, /[0-9]+(\.[0-9]+)?[KMGTPEZY]?/); print substr($0, RSTART, RLENGTH)}')
+    echo "${dirsearchscan_file_size_value}"
+    ;;
 esac
