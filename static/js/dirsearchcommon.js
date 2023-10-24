@@ -247,6 +247,12 @@ function nucleijumpfunc(value) {
 }
 
 
+//dirsearch扫描结果预览
+function dirsearchresultshowfunc(value) {
+    window.open("/dirsearchresultshowinterface/")
+}
+
+
 
 
 //ip异步查询ping结果

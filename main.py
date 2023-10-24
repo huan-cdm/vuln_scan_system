@@ -2309,15 +2309,22 @@ def subdomainiplistfiledown():
 
 
 #----------------------------------------dirsearch目录扫描模块------------------------------------------------#
-#dirsearch扫描结果下载
-@app.route("/dirsearchfiledownload/")
-def dirsearchfiledownload():
-    app.logger.warning('dirsearch扫描结果下载')
+
+#目录扫描结果文件预览
+@app.route("/dirsearchresultshowinterface/")
+def dirsearchresultshowinterface():
+    app.logger.warning('目录扫描结果文件预览')
     user = session.get('username')
     if str(user) == usernameconfig:
-        return send_from_directory(path = '/TIP/flask_cnvd/file_txt/dirsearchfileresult.txt',directory ='/TIP/flask_cnvd/file_txt',filename="dirsearchfileresult.txt",as_attachment=True)
+        lines = []
+        with open('/TIP/flask_cnvd/file_txt/dirsearchfileresult.txt','r') as f:
+            for line in f:
+                lines.append(line.strip())
+        return '<br>'.join(lines)
     else:
         return render_template('login.html')
+
+
 
 
 
