@@ -2326,6 +2326,22 @@ def dirsearchresultshowinterface():
 
 
 
+#目录扫描目标文件预览
+@app.route("/dirsearchtargetfileshowinterface/")
+def dirsearchtargetfileshowinterface():
+    app.logger.warning('目录扫描目标文件预览')
+    user = session.get('username')
+    if str(user) == usernameconfig:
+        lines = []
+        with open('/TIP/flask_cnvd/file_txt/dirsearchtarget.txt','r') as f:
+            for line in f:
+                lines.append(line.strip())
+        return '<br>'.join(lines)
+    else:
+        return render_template('login.html')
+
+
+
 
 
 #dirsearch目标文件下载

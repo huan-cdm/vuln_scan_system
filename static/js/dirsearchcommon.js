@@ -253,6 +253,11 @@ function dirsearchresultshowfunc(value) {
 }
 
 
+//dirsearch扫描目标预览
+function dirsearchtargetshowfunc(value) {
+    window.open("/dirsearchtargetfileshowinterface/")
+}
+
 
 
 //ip异步查询ping结果
