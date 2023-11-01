@@ -3383,8 +3383,15 @@ def scanbeforeinsertinterface():
                 vuln_url_message2 = "扫描前黑名单"+url_value_result_11+"已入库成功"
                 insert_data_list.append(vuln_url_message2)
         
+        #逻辑判断 2023.11.01
+        for jj in insert_data_list:
+            if "已入库成功" in jj:
+                insert_data_list_11 = "正在入库中......"
+            else:
+                insert_data_list_11 = "已入库完成!"
+
         global insert_data_list_result
-        insert_data_list_result = insert_data_list
+        insert_data_list_result = insert_data_list_11
 
         return render_template('dirsearchscan.html')
     else:
@@ -3445,9 +3452,16 @@ def scanafterinsertinterface():
                 vuln_url_message2 = "扫描后黑名单"+url_value_result_11+"已入库成功"
                 insert_data_list.append(vuln_url_message2)
 
+        #逻辑判断 2023.11.01
+        for jj in insert_data_list:
+            if "已入库成功" in jj:
+                insert_data_list_22 = "正在入库中......"
+            else:
+                insert_data_list_22 = "已入库完成!"
+
         #定义全局变量用于前端在展示
         global insert_after_data_list_result
-        insert_after_data_list_result = insert_data_list
+        insert_after_data_list_result = insert_data_list_22
 
         #生成文件用于过滤扫描结果
         sql1 = "select name from blacklist_table order by id desc"
